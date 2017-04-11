@@ -1,0 +1,9 @@
+{
+  "name": "Support-Panel",
+  "private": "true",
+  "dependencies": {
+    "express": "*",
+    "jade": "*",
+    "socket.io": "*"
+  }
+}
