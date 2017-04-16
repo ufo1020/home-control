@@ -1,5 +1,5 @@
 var support_panel = angular.module('SupportPanel', ['ui.bootstrap', 'angular-dialgauge', 'ngMaterial', 'nvd3']);
-var socket = io.connect('http://192.168.217.139:5000');
+var socket = io.connect('http://10.0.0.22:5000');
 
 // directive to move to the last line of a text area when updated
 angular.module('SupportPanel').directive('rollingLog', function ($parse) {
@@ -1657,14 +1657,14 @@ support_panel.controller('mainController', function($interval, $scope, $mdDialog
     };
 
     // fetch the mode, firmware details and lid state immediately
-    vm.regular_checks();
-    vm.get_firmware_details(false);
-    vm.get_lid_lock_state();
+    // vm.regular_checks();
+    // vm.get_firmware_details(false);
+    // vm.get_lid_lock_state();
 
-    $interval(vm.update_bottles, 5000)
-    $interval(vm.update_temperatures, 2000);
-    $interval(vm.update_pressures, 2000);
-    $interval(vm.regular_checks, 10000);
-    $interval(vm.get_lid_lock_state, 5000);
-    $interval(vm.format_log_text, 1000);
+    // $interval(vm.update_bottles, 5000)
+    // $interval(vm.update_temperatures, 2000);
+    // $interval(vm.update_pressures, 2000);
+    // $interval(vm.regular_checks, 10000);
+    // $interval(vm.get_lid_lock_state, 5000);
+    // $interval(vm.format_log_text, 1000);
 });

@@ -2,6 +2,8 @@
   "name": "support-panel",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#2.0-preview"
+  	"iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "polymer": "Polymer/polymer#^1.1.0"
   }
 }
+// bower install polymerelements/iron-image

@@ -2,17 +2,23 @@ doctype
 html
 head
   meta(charset='UTF-8')
-  title Support Panel
-  link(rel='import', href='libs/bootstrap/3.3.6/css/bootstrap.min.css')
+  title Home Cental
+
   script(src='components/webcomponentsjs/webcomponents-lite.js')
   script(src='libs/socket.io/socket.io-1.4.5.js')
-  script(src='js/controllers/support-panel.js')
+  script(src='libs/angular/js/angular-1.5.0.js')
+  script(src='js/controllers/home-server.js')
   link(rel='stylesheet', href='css/core.css')
+  link(rel="import" href="components/iron-image/iron-image.html")
 body(ng-controller='mainController as ctrl')
   section.section
+    div.background
+        iron-image(src='http://lorempixel.com/400/400')
     div.top(horizontal center-justified center layout)
         p Select a line in one of the main log windows to get the context around it
     div.middle(layout wrap horizontal around-justified center relative)
         p Select a line in one of the main log windows to get the context around it
     div.bottom
         p Select a line in one of the main log windows to get the context around it
+
+
