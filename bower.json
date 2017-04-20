@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
   	"iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "iron-image": "PolymerElements/iron-image",
     "polymer": "Polymer/polymer#^1.1.0"
   }
 }
-// bower install polymerelements/iron-image
