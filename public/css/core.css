@@ -56,6 +56,16 @@
     color:#222;
 }
 
+.slider {
+  width:250px;
+  height:150px;
+  position:relative;
+  margin: auto;
+  top:0;left:0;right:0;bottom:0;
+  background-color:#eee;
+  overflow:hidden;
+}
+
 .top {
     height: 30%;
     box-sizing: border-box;

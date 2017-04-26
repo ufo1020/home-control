@@ -3,7 +3,8 @@
   "private": true,
   "dependencies": {
   	"iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
-    "iron-image": "PolymerElements/iron-image",
+    "iron-image": "PolymerElements/iron-image#^1.0.0",
+    "paper-slider": "PolymerElements/paper-slider#^1.0.0",
     "polymer": "Polymer/polymer#^1.1.0"
   }
 }
