@@ -1,10 +1,11 @@
 {
-  "name": "support-panel",
+  "name": "home-control",
   "private": true,
   "dependencies": {
   	"iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
     "iron-image": "PolymerElements/iron-image#^1.0.0",
     "paper-slider": "PolymerElements/paper-slider#^1.0.0",
+    "paper-fab": "PolymerElements/paper-fab#^1.0.0",
     "polymer": "Polymer/polymer#^1.1.0"
   }
 }

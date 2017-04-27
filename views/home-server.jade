@@ -10,17 +10,18 @@ head
   script(src='js/controllers/home-server.js')
   link(rel="import" href="components/iron-image/iron-image.html")
   link(rel="import" href="components/paper-slider/paper-slider.html")
+  link(rel="import" href="components/paper-fab/paper-fab.html")
   link(rel='stylesheet', href='css/core.css')
 body(ng-controller='mainController as ctrl')
   section.section
     div.image-background
-      div.blur-background
-        div.text-container
-          span.text +8
-      div.slider
-        paper-slider(class ="red" value="15" max="30" editable)
+      div.center
+        div.blur-background
+          div.text-container
+            span.text +8
+        div.slider
+          paper-slider(class ="red" value="15" max="30" editable)
       div.bottom-menu
-        button f1
-        button f2        
-        button f3
+        paper-fab.menu-bottom(icon="favorite" title="heart")
+        paper-fab.menu-bottom(icon="reply" title="reply")
 
