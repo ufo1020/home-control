@@ -15,13 +15,13 @@ head
 body(ng-controller='mainController as ctrl')
   section.section
     div.image-background
-      div.center
+      div.center-container
         div.blur-background
           div.text-container
             span.text +8
         div.slider
           paper-slider(class ="red" value="15" max="30" editable)
       div.bottom-menu
-        paper-fab.menu-bottom(icon="favorite" title="heart")
-        paper-fab.menu-bottom(icon="reply" title="reply")
+          paper-fab(class="bottom-menu-button" icon="favorite" title="heart")
+          paper-fab(class="bottom-menu-button" icon="favorite" title="heart")
 
