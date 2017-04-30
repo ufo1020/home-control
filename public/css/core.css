@@ -27,7 +27,7 @@
   width:200px;
   position:relative;
   overflow:hidden;
-  top:10px;left:-10px;right:0;bottom:0;
+  top:10px;left:0px;right:0;bottom:0;
   background-color:LightGray;
   border-radius: 6px;
 }
@@ -37,6 +37,7 @@
   width:150px;
   height:150px;
   position:relative;
+  margin:auto;
   top:0;left:0;right:0;bottom:0;
   background-color:#eee;
   border-radius: 50%;
@@ -78,15 +79,27 @@ paper-slider.red {
     --paper-slider-active-color: var(--paper-red-500);
 }
 
+paper-fab.blue {
+    --paper-fab-background: var(--paper-light-blue-500);
+    --paper-fab-keyboard-focus-background: var(--paper-light-blue-900);
+}
+
 .bottom-menu{
     width: 100%;
     height: 50px;
     position: absolute;
     bottom: 0px;
-    background-color:PaleTurquoise;
+    background-color:White;
 }
 
-.bottom-menu-button{
-    display: inline-block;
-    margin-left:5px;
+.bottom-menu-container{
+    width: 350px;
+    position:relative;
+    margin: auto;
 }
+
+.botton{
+    display: inline-block;
+    margin-left: 50px;
+}
+
