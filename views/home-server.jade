@@ -3,7 +3,9 @@ html
 head
   meta(charset='UTF-8')
   title Home Cental
-
+  script.
+    Polymer = {lazyRegister: true,
+    useNativeCSSProperties: true};
   script(src='components/webcomponentsjs/webcomponents-lite.js')
   script(src='libs/socket.io/socket.io-1.4.5.js')
   script(src='libs/angular/js/angular-1.5.0.js')
