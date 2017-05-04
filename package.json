@@ -1,9 +1,12 @@
 {
-  "name": "Support-Panel",
+  "name": "Home-Control",
   "private": "true",
   "dependencies": {
     "express": "*",
     "jade": "*",
-    "socket.io": "*"
+    "socket.io": "*",
+    "python-shell": "*",
+    "angular-nvd3": "*",
+    "angular": "*"
   }
 }
