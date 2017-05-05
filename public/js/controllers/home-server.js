@@ -2,7 +2,7 @@ var support_panel = angular.module('HomeControl', ['ui.bootstrap', 'angular-dial
 var socket = io.connect('http://localhost:5000');
 
 // directive to move to the last line of a text area when updated
-angular.module('SupportPanel').directive('rollingLog', function ($parse) {
+angular.module('HomeControl').directive('rollingLog', function ($parse) {
     return function (scope, elem, attrs) {
         maxLength = parseInt(attrs.maxLength)
         deleteBlockSize = parseInt(attrs.deleteBlockSize)
@@ -72,7 +72,6 @@ angular.module('SupportPanel').directive('rollingLog', function ($parse) {
 
 support_panel.controller('mainController', function($interval, $scope, $mdDialog, $http) {
     var vm = this;
-    vm.rowLabels = "ABCDEFGH";
     vm.ssm_color = 'smoke';
     vm.bottle_color = 'smoke';
     vm.isCollapsed = false;
@@ -1662,9 +1661,4 @@ support_panel.controller('mainController', function($interval, $scope, $mdDialog
     // vm.get_lid_lock_state();
 
     // $interval(vm.update_bottles, 5000)
-    // $interval(vm.update_temperatures, 2000);
-    // $interval(vm.update_pressures, 2000);
-    // $interval(vm.regular_checks, 10000);
-    // $interval(vm.get_lid_lock_state, 5000);
-    // $interval(vm.format_log_text, 1000);
 });
