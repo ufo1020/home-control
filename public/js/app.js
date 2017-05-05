@@ -1,1 +1,1 @@
-angular.module('SupportPanelModule', ['ui.bootstrap', 'ngMaterial', 'SupportPanelCtrl']);
+angular.module('ContollerModule', ['ui.bootstrap', 'ngMaterial', 'SupportPanelCtrl']);

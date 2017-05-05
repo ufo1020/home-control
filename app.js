@@ -5,7 +5,7 @@ var io = require('socket.io')(server);
 var fs = require('fs');
 
 app.use(express.static(__dirname + '/public'));
-// app.use('/libs', express.static(__dirname + '/node_modules'));
+app.use('/libs', express.static(__dirname + '/node_modules'));
 app.use('/components', express.static(__dirname + '/bower_components'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -20,7 +20,6 @@ app.get('/', function (req, res) {
 
 io.on('connection', function (client) {
     console.log('connected');
-
 
     client.on('disconnect', function() {
         console.log('disconnected');

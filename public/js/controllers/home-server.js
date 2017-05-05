@@ -1,4 +1,4 @@
-var support_panel = angular.module('SupportPanel', ['ui.bootstrap', 'angular-dialgauge', 'ngMaterial', 'nvd3']);
+var support_panel = angular.module('HomeControl', ['ui.bootstrap', 'angular-dialgauge', 'ngMaterial', 'nvd3']);
 var socket = io.connect('http://localhost:5000');
 
 // directive to move to the last line of a text area when updated
