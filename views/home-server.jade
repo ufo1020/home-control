@@ -1,5 +1,5 @@
 doctype
-html
+html(ng-app='HomeControl')
 head
   meta(charset='UTF-8')
   title Home Cental
@@ -14,9 +14,6 @@ head
   link(rel="import" href="components/paper-slider/paper-slider.html")
   link(rel="import" href="components/paper-fab/paper-fab.html")
   link(rel='stylesheet', href='css/core.css')
-  link(rel="stylesheet" type="text/css" href="/libs/nvd3/build/nv.d3.css")
-  script(src="/libs/d3/d3.js")
-  script(src="/libs/nvd3/build/nv.d3.js")
   script(src='libs/angular-nvd3/dist/angular-nvd3.js')
 body(ng-controller='mainController as ctrl')
   section.section
@@ -24,7 +21,7 @@ body(ng-controller='mainController as ctrl')
       div.center-container
         div.blur-background
           div.text-container
-            span.text +8
+            span.text {{ctrl.temperature}}
         div.slider
           paper-slider(class ="red" value="15" max="30" editable)
       div.bottom-menu
