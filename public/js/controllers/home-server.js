@@ -1,7 +1,7 @@
 var support_panel = angular.module('HomeControl', ['nvd3']);
 var socket = io.connect('http://192.168.232.128:5000');
 
-support_panel.controller('mainController', function($interval, $scope, $mdDialog, $http) {
+support_panel.controller('mainController', function($interval, $scope, $http) {
     var vm = this;
     vm.thermo_img = "/img/temperature icon.png"
     vm.settle_temperature = 2 // 2 degrees for settling 
