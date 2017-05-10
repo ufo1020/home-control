@@ -1,9 +1,8 @@
 var support_panel = angular.module('HomeControl', ['nvd3']);
-var socket = io.connect('http://192.168.232.128:5000');
+var socket = io.connect('http://10.0.0.22:5000');
 
 support_panel.controller('mainController', function($interval, $scope, $http) {
     var vm = this;
-    vm.thermo_img = "/img/temperature icon.png"
     vm.settle_temperature = 2 // 2 degrees for settling 
     vm.temperature = 21
     vm.nvd3_options = {
@@ -108,16 +107,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         vm.update_temperatures_response_text += data;
     });
 
-    socket.on('pressure-log', function(data) {
-        vm.update_pressures_response_text += data;
-    });
-
     socket.on('mode-log', function(data) {
         vm.mode_response_text += data;
-    });
-
-    socket.on('firmware-log', function(data) {
-        vm.firmware_response_text += data;
     });
 
     socket.on('report-log', function(data) {
@@ -301,14 +292,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.run_script = function(script_description, script_param_string, callback) {
         socket.emit('control-commands', script_param_string, function(run_result) {
             callback(run_result);
-            if (show_dialog) {
-                // wait at least 2 seconds to show dialog
-                setTimeout(function(){$mdDialog.hide();}, 2000);
-            }
         });
     };
 
     vm.update_temperatures()
-    $interval(vm.update_temperatures, 10000);
+    //$interval(vm.update_temperatures, 10000);
 });
 
