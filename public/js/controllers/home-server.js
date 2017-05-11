@@ -4,7 +4,6 @@ var socket = io.connect('http://10.0.0.22:5000');
 support_panel.controller('mainController', function($interval, $scope, $http) {
     var vm = this;
     vm.settle_temperature = 2 // 2 degrees for settling 
-    vm.temperature = 21
     vm.nvd3_options = {
         chart: {
             type: 'lineWithFocusChart',
@@ -296,6 +295,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.update_temperatures()
-    //$interval(vm.update_temperatures, 10000);
+    $interval(vm.update_temperatures, 10000);
 });
 

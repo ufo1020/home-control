@@ -12,6 +12,7 @@ head
   script(src='js/controllers/home-server.js')
   link(rel="import" href="components/iron-image/iron-image.html")
   link(rel="import" href="components/paper-slider/paper-slider.html")
+  link(rel="import" href="components/iron-icons/iron-icons.html")
   link(rel="import" href="components/paper-fab/paper-fab.html")
   link(rel='stylesheet', href='css/core.css')
   script(src='libs/angular-nvd3/dist/angular-nvd3.js')
@@ -21,15 +22,15 @@ body(ng-controller='mainController as ctrl')
       div.center-container
         div.blur-background
           div.text-container
-            span.text {{ctrl.temperature}}
+            span.text {{ctrl.current_temp}}
         div.slider
           paper-slider(class ="red" value="15" max="30" editable)
       div.bottom-menu
         div.bottom-menu-container
           div.botton
-            paper-fab.blue(icon="favorite" title="heart")
+            paper-fab.blue(icon="icons:query-builder" title="timer")
           div.botton
-            paper-fab(icon="favorite" title="heart")
+            paper-fab(icon="icons:trending-up" title="chart")
           div.botton
             paper-fab(icon="favorite" title="heart")
 
