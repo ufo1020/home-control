@@ -5,7 +5,7 @@ import os.path
 TMP_SENSOR_INPUT_PIN = 'P9_40'
 GPIO_FILE_PATH  = "/sys/class/gpio/gpio60/value"
 
-TEMPERATURE_LOG_FILE_PATH = "/root/Code/thermo_control/python-scripts/temperature.log"
+TEMPERATURE_LOG_FILE_PATH = "/root/home-control/python-scripts/temperature.log"
 LOCAL_PORT = "9001"
 LOCAL_ADDRESS = "tcp://127.0.0.1" + ":" + LOCAL_PORT
 

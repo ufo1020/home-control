@@ -207,9 +207,28 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             console.log(run_result);
         });
 
-    }
+    };
+
+    vm.clickNext= function() {
+      var pages = document.querySelector('iron-pages');
+      pages.selectNext();
+    };
+
+    document.addEventListener('WebComponentsReady', function() {
+      var target = document.querySelector('#target');
+      target.addEventListener('value-change', function() {
+          vm.set_temperatures(target.value);
+      });
+    });
 
     vm.set_temperatures = function() {
+        var args = "--target:" + vm.target_temperature_text;
+        socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
+            console.log(run_result);
+        });
+    };
+
+    vm.set_clock = function() {
         var args = ""
         if (vm.enable_time && vm.time_h != undefined 
             && vm.time_m != undefined && vm.target_temperature_text != undefined) {
