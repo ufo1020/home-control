@@ -221,8 +221,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
       });
     });
 
-    vm.set_temperatures = function() {
-        var args = "--target:" + vm.target_temperature_text;
+    vm.set_temperatures = function(value) {
+        var args = "--target:" + value;
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             console.log(run_result);
         });
