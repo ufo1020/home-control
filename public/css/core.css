@@ -25,12 +25,13 @@
 }
 
 .slider {
-  width:200px;
   position:relative;
   overflow:hidden;
-  top:10px;left:0px;right:0;bottom:0;
+  top:30px;left:0px;right:0;bottom:0;
   background-color:LightGray;
   border-radius: 6px;
+  min-height: 50px;
+  padding-top:15px;
 }
 
 .blur-background {
@@ -91,16 +92,18 @@ paper-fab.blue {
 
 .bottom-menu{
     width: 100%;
-    height: 50px;
+    height: 10%;
     position: absolute;
     bottom: 0px;
-    background-color:White;
+    background-color:#607d8b;
 }
 
 .bottom-menu-container{
     width: 350px;
+    min-width: 320px;
     position:relative;
     margin: auto;
+    padding-top:10px;
 }
 
 .botton{

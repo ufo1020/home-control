@@ -2,6 +2,7 @@ doctype
 html(ng-app='HomeControl')
 head
   meta(charset='UTF-8')
+  meta(name="viewport" content="width=device-width, initial-scale=1.0")
   title Home Cental
   script.
     Polymer = {lazyRegister: true,
@@ -26,7 +27,7 @@ body(ng-controller='mainController as ctrl')
               div.text-container
                 span.text {{ctrl.current_temp}}
             div.slider
-              paper-slider(id="target" class ="red" value="15" max="30" editable)
+              paper-slider(id="target" class ="red" value="15" max="30" pin editable)
         div.image-background
           span abc
       div.bottom-menu
