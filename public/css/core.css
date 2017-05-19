@@ -24,14 +24,14 @@
   top:0;left:0;right:0;bottom:0;
 }
 
-.slider {
+.main-button {
   position:relative;
-  overflow:hidden;
   top:30px;left:0px;right:0;bottom:0;
-  background-color:LightGray;
-  border-radius: 6px;
-  min-height: 50px;
-  padding-top:15px;
+}
+
+.main-button-button {
+  width:200px;
+  margin-top:15px;
 }
 
 .blur-background {
@@ -128,6 +128,16 @@
   content: "°";
 }
 
+
+paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+}
+
+paper-button.red {
+    background-color: var(--paper-red-500);
+    color: white;
+}
 
 paper-slider.red {
     --paper-slider-knob-color: var(--paper-red-500);

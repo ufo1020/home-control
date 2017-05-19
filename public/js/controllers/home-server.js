@@ -222,6 +222,16 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
       });
     });
 
+    vm.turn_on = function() {
+        // turn on default 20
+        vm.set_temperatures(20);
+    };
+
+    vm.turn_off = function() {
+        // turn off default 20
+        vm.set_temperatures(8);
+    };
+
     vm.set_temperatures = function(value) {
         // Set target temperature
         var args = "--target:" + value;
