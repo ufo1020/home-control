@@ -74,6 +74,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.enable_time = false;
     vm.switch_on = false;
 
+
     vm.range  = function(start, end, step = 1, offset = 0) {
         return Array.apply(null, Array((Math.abs(end - start) + ((offset||0)*2))/(step||1)+1)) .map(function(_, i)
             { return start < end ? i*(step||1) + start - (offset||0) :  (start - (i*(step||1))) + (offset||0) })
@@ -222,19 +223,24 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     });
 
     vm.set_temperatures = function(value) {
+        // Set target temperature
         var args = "--target:" + value;
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             console.log(run_result);
         });
     };
 
-    vm.set_clock = function() {
+    vm.add_timer = function() {
+        // Add target temperature and time
+        var time_target = document.querySelector('#time_target').value;
+        var time_input = document.querySelector('#time_input').value;
+        // time input format: 04:20
+        time_input = time_input.split(":");
+        var time_h = time_input[0];
+        var time_m = time_input[1];
         var args = ""
-        if (vm.enable_time && vm.time_h != undefined 
-            && vm.time_m != undefined && vm.target_temperature_text != undefined) {
-            args = "--set:" + vm.target_temperature_text + "-" + vm.time_h + "-" + vm.time_m;
-        } else if (vm.target_temperature_text != undefined) {
-            args = "--target:" + vm.target_temperature_text;
+        if (time_h != undefined && time_m != undefined && time_target != undefined) {
+            args = "--set:" + time_target + "-" + time_h + "-" + time_m;
         }
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             console.log(run_result);
