@@ -17,7 +17,7 @@ MONITOR_TIMEOUT_S = 60
 ON = "1"
 OFF = "0"
 MAX_SET_TEMPERATURE = 30
-MIN_SET_TEMPERATURE = 10
+MIN_SET_TEMPERATURE = 7
 
 class comms_thread(threading.Thread):
     def __init__(self, thread_id, name):

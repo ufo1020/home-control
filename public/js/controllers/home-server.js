@@ -215,12 +215,12 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
       pages.selectNext();
     };
 
-    document.addEventListener('WebComponentsReady', function() {
-      var target = document.querySelector('#target');
-      target.addEventListener('value-change', function() {
-          vm.set_temperatures(target.value);
-      });
-    });
+    // document.addEventListener('WebComponentsReady', function() {
+    //   var target = document.querySelector('#target');
+    //   target.addEventListener('value-change', function() {
+    //       vm.set_temperatures(target.value);
+    //   });
+    // });
 
     vm.turn_on = function() {
         // turn on default 20
