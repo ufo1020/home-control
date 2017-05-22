@@ -68,6 +68,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.temperature_settings_text = [];
     vm.current_temp = 0.0;
     vm.update_temperatures_response_text = '';
+    vm.update_report_response_text = '';
     vm.target_temperature_text = 0;
     vm.target_temperature = 0;
     vm.time_queue = [];
@@ -115,104 +116,116 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         vm.update_report_response_text += data;
     });
 
-
-    vm.add_setting = function() {
-        var item = "";
+    // vm.add_setting = function() {
+    //     var item = "";
         
-        if (vm.target_temperature_text > 0) {
-            item += vm.target_temperature_text + "°C";
-            if (vm.enable_time) {
-                var t = "";
-                if (vm.time_h < 10) {
-                    t = '0' + vm.time_h;
-                } else {
-                    t = vm.time_m;
-                }
-                t += ":";                
-                if (vm.time_m < 10) {
-                    t += '0' + vm.time_m;
-                } else {
-                    t += vm.time_m;
-                }
-                item += "@" + t;
+    //     if (vm.target_temperature_text > 0) {
+    //         item += vm.target_temperature_text + "°C";
+    //         if (vm.enable_time) {
+    //             var t = "";
+    //             if (vm.time_h < 10) {
+    //                 t = '0' + vm.time_h;
+    //             } else {
+    //                 t = vm.time_m;
+    //             }
+    //             t += ":";                
+    //             if (vm.time_m < 10) {
+    //                 t += '0' + vm.time_m;
+    //             } else {
+    //                 t += vm.time_m;
+    //             }
+    //             item += "@" + t;
 
-            } else {
-                vm.target_temperature = vm.target_temperature_text;
-            }
-            vm.temperature_settings_text.push(item);
-            vm.remove_duplicate_settings();
-            vm.update_time_queue();
-        }
-    };
+    //         } else {
+    //             vm.target_temperature = vm.target_temperature_text;
+    //         }
+    //         vm.temperature_settings_text.push(item);
+    //         vm.remove_duplicate_settings();
+    //         vm.update_time_queue();
+    //     }
+    // };
 
-    vm.update_time_queue = function() {
-        vm.time_queue = [];
-        for (var item in vm.temperature_settings_text) {
-            // @ means item has time setting
-            if (vm.is_key_exist(item, "@")) {
-                // 13C@03:02
-                var index_of_divider = itemitem.indexOf("@");
-                var index_of_time_divider = itemitem.indexOf(":");
-                var temperature = item.slice(0, index_of_divider - 1);
-                var time_h = item.slice(index_of_divider + 1, index_of_time_divider);
-                var time_m = item.slice(index_of_time_divider + 1);
-                var d = new Date();
-                d.setHours(time_h);
-                d.setMinutes(time_m);
-                vm.time_queue.push({"temperature":int(temperature), "time":d});
-            }
-        }
-        // sorting the queue
-        if (vm.time_queue.length > 1) {
-            vm.time_queue.sort(function(a, b) {
-                return a.time > b.time;
-            });
-        }        
-    };
+    // vm.update_time_queue = function() {
+    //     vm.time_queue = [];
+    //     for (var item in vm.temperature_settings_text) {
+    //         // @ means item has time setting
+    //         if (vm.is_key_exist(item, "@")) {
+    //             // 13C@03:02
+    //             var index_of_divider = itemitem.indexOf("@");
+    //             var index_of_time_divider = itemitem.indexOf(":");
+    //             var temperature = item.slice(0, index_of_divider - 1);
+    //             var time_h = item.slice(index_of_divider + 1, index_of_time_divider);
+    //             var time_m = item.slice(index_of_time_divider + 1);
+    //             var d = new Date();
+    //             d.setHours(time_h);
+    //             d.setMinutes(time_m);
+    //             vm.time_queue.push({"temperature":int(temperature), "time":d});
+    //         }
+    //     }
+    //     // sorting the queue
+    //     if (vm.time_queue.length > 1) {
+    //         vm.time_queue.sort(function(a, b) {
+    //             return a.time > b.time;
+    //         });
+    //     }        
+    // };
                 
-    vm.remove_duplicate_settings = function() {
-        var new_list = [];
-        for (var i = 0; i < vm.temperature_settings_text.length; i++) {
-            // temperature only setting
-            if (vm.temperature_settings_text[i].indexOf("@") == -1) {
-                var to_remove = false;
-                for (var j = i+1; j < vm.temperature_settings_text.length; j++) {
-                    if (vm.temperature_settings_text[j].indexOf("@") == -1) {
-                        to_remove = true;
-                        break;
-                    }
-                }
-                if (!to_remove) {
-                    new_list.push(vm.temperature_settings_text[i]);
-                }
-            } else {
-                var t = vm.temperature_settings_text[i].slice(vm.temperature_settings_text[i].indexOf("@")+1)
-                var to_remove = false;
-                for (var j = i+1; j < vm.temperature_settings_text.length; j++) {
-                    if ( t === vm.temperature_settings_text[j].slice(vm.temperature_settings_text[j].indexOf("@")+1)) {
-                        to_remove = true;
-                        break;
-                    }
-                }
-                if (!to_remove) {
-                    new_list.push(vm.temperature_settings_text[i]);
-                }
-            }
-        }
-        return new_list;
-    };
+    // vm.remove_duplicate_settings = function() {
+    //     var new_list = [];
+    //     for (var i = 0; i < vm.temperature_settings_text.length; i++) {
+    //         // temperature only setting
+    //         if (vm.temperature_settings_text[i].indexOf("@") == -1) {
+    //             var to_remove = false;
+    //             for (var j = i+1; j < vm.temperature_settings_text.length; j++) {
+    //                 if (vm.temperature_settings_text[j].indexOf("@") == -1) {
+    //                     to_remove = true;
+    //                     break;
+    //                 }
+    //             }
+    //             if (!to_remove) {
+    //                 new_list.push(vm.temperature_settings_text[i]);
+    //             }
+    //         } else {
+    //             var t = vm.temperature_settings_text[i].slice(vm.temperature_settings_text[i].indexOf("@")+1)
+    //             var to_remove = false;
+    //             for (var j = i+1; j < vm.temperature_settings_text.length; j++) {
+    //                 if ( t === vm.temperature_settings_text[j].slice(vm.temperature_settings_text[j].indexOf("@")+1)) {
+    //                     to_remove = true;
+    //                     break;
+    //                 }
+    //             }
+    //             if (!to_remove) {
+    //                 new_list.push(vm.temperature_settings_text[i]);
+    //             }
+    //         }
+    //     }
+    //     return new_list;
+    // };
 
-    vm.apply_switch_on = function() {        
-        var args = "--set:" + (vm.switch_on ? "1" : "0");
-        socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
-            console.log(run_result);
-        });
+    // vm.apply_switch_on = function() {        
+    //     var args = "--set:" + (vm.switch_on ? "1" : "0");
+    //     socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
+    //         console.log(run_result);
+    //     });
 
-    };
+    // };
 
-    vm.clickNext= function() {
+    vm.on_timer_click= function() {
       var pages = document.querySelector('iron-pages');
-      pages.selectNext();
+      if (pages.selected == '0') {
+          pages.selected = "1";
+      } else {
+          pages.selected = "0";
+      }      
+    };
+
+    vm.on_chart_click= function() {
+      var pages = document.querySelector('iron-pages');
+      if (pages.selected == '0') {
+          pages.selected = "2";
+      } else {
+          pages.selected = "0";
+      }      
     };
 
     // document.addEventListener('WebComponentsReady', function() {
@@ -221,6 +234,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     //       vm.set_temperatures(target.value);
     //   });
     // });
+
 
     vm.turn_on = function() {
         // turn on default 20
@@ -273,6 +287,24 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         }
     };
 
+    vm.update_plot = function(value) {
+        var args = "--plot:" + value;
+        socket.emit('control-commands', 'runscript~report-log~thermo_control~'+args, function(run_result) {
+            console.log(run_result);
+            // '...@@RESPONSE@@ [{'timestamp': '22:13', 'temp': '21.7\n'}] @@RESPONSE@@...';
+            vm.update_report_response_text = '';
+        });
+    };
+
+
+    vm.set_temperatures = function(value) {
+        // Set target temperature
+        var args = "--target:" + value;
+        socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
+            console.log(run_result);
+        });
+    };
+
     vm.check_settings = function() {
         // check if target temperature set
         if (vm.target_temperature) {
@@ -294,13 +326,13 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         vm.time_queue = new_list;
     };
 
-    vm.is_key_exist = function(str, key) {
-        if (str.indexOf(key) == -1) {
-            return false;
-        } else {
-            return true;
-        }
-    };
+    // vm.is_key_exist = function(str, key) {
+    //     if (str.indexOf(key) == -1) {
+    //         return false;
+    //     } else {
+    //         return true;
+    //     }
+    // };
 
     vm.get_response_string = function(data) {
         // data is in the format:

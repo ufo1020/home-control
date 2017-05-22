@@ -39,14 +39,16 @@ body(ng-controller='mainController as ctrl')
               paper-slider.time-slider(id='time_target' class ="red" min="8" max="30" pin editable)
               paper-button.time-button(raised ng-click='ctrl.add_timer()') Add timer
         div.image-background(name='plot-page')
-            span abc
+          div.blur-background-plot
+          div.center-container-plot
+            nvd3(options='ctrl.nvd3_options' data='ctrl.nvd3_data', api='ctrl.nvd3_api')
 
       div.bottom-menu
         div.bottom-menu-container
           div.botton
-            paper-fab.blue(icon="icons:query-builder" title="timer" ng-click="ctrl.clickNext()")
+            paper-fab.blue(icon="icons:query-builder" title="timer" ng-click="ctrl.on_timer_click()")
           div.botton
-            paper-fab(icon="icons:trending-up" title="chart")
+            paper-fab(icon="icons:trending-up" title="chart" ng-click="ctrl.on_chart_click()")
           div.botton
             paper-fab(icon="favorite" title="heart")
 
