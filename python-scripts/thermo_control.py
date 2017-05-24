@@ -29,7 +29,12 @@ def send_del(message):
     reponse = send("--delete:" + message)
     # print reponse
 
+def send_get_target():
+    reponse = send("--get")
+    return reponse
+
 def get_plot(required_lines):
+    # send_get_target()
     if not os.path.exists(thermo_utility.TEMPERATURE_LOG_FILE_PATH):
         return False
     f = open(thermo_utility.TEMPERATURE_LOG_FILE_PATH, 'r')

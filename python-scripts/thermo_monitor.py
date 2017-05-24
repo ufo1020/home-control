@@ -22,6 +22,7 @@ MIN_SET_TEMPERATURE = 7
 class comms_thread(threading.Thread):
     def __init__(self, thread_id, name):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.thread_id = thread_id
         self.name = name
         # ZMQ setup
@@ -33,9 +34,11 @@ class comms_thread(threading.Thread):
     def listening(self):
         while True:
             message = self.sock.recv()
-            self.handle_message(message)
-            self.sock.send("Echo: " + message)
-            # print "Echo: " + message
+            result = self.handle_message(message)
+            if result == None:
+                result = ""
+            self.sock.send(str(result))
+            print "Echo: " + str(result)
 
     def is_temperature_valid(self, temperature):
         return MIN_SET_TEMPERATURE <= temperature < MAX_SET_TEMPERATURE
@@ -44,9 +47,13 @@ class comms_thread(threading.Thread):
         return 0 <= h <24 and 0<= m < 60
 
     def handle_message(self, message):
-        # input format: --set:1-2-3 --delete:2-3-4 --target:14
+        # input format: 
+        # --set:1-2-3
+        # --delete:2-3-4 
+        # --target:14
+        # --get
         contents = message.split(":")
-        if (len(contents) < 2):
+        if (len(contents) < 1):
             return
         command = contents[0]
 
@@ -94,6 +101,9 @@ class comms_thread(threading.Thread):
             args = contents[1].split("-")
             if len(args) is not 3:
                 return
+        elif command == "--get":
+            return g_target_temperature
+
         print "set target:" + str(g_target_temperature) + " next temp:" + str(g_next_temperature) + " next timer:" + str(g_next_timer_countdown)
 
     def run(self):
@@ -102,6 +112,7 @@ class comms_thread(threading.Thread):
 class control_thread(threading.Thread):
     def __init__(self, thread_id, name):
         threading.Thread.__init__(self)
+        self.daemon = True
         self.thread_id = thread_id
         self.name = name
         self.heater_state = ON if thermo_utility.get_switch_state() else OFF
@@ -145,6 +156,8 @@ def main():
 
     commsThread.start()
     controlThread.start()
+    while True:
+        time.sleep(1)
 
 if __name__ == "__main__":
     sys.exit(main())
