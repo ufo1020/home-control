@@ -38,7 +38,7 @@ class comms_thread(threading.Thread):
             if result == None:
                 result = ""
             self.sock.send(str(result))
-            print "Echo: " + str(result)
+            # print "Echo: " + str(result)
 
     def is_temperature_valid(self, temperature):
         return MIN_SET_TEMPERATURE <= temperature < MAX_SET_TEMPERATURE

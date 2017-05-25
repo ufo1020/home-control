@@ -34,7 +34,8 @@ def send_get_target():
     return reponse
 
 def get_plot(required_lines):
-    # send_get_target()
+    target = send_get_target()
+
     if not os.path.exists(thermo_utility.TEMPERATURE_LOG_FILE_PATH):
         return False
     f = open(thermo_utility.TEMPERATURE_LOG_FILE_PATH, 'r')
@@ -54,6 +55,7 @@ def get_plot(required_lines):
         t = line[1]
         item["timestamp"] = str(date.hour) + ":" + str(date.minute)
         item["temp"] = t
+        item["target"] = target
         items.append(item)
     f.close()
     return  items
@@ -83,7 +85,7 @@ def main():
     if get_temp:
         print '@@RESPONSE@@', {"temperature" : thermo_utility.get_temperatures()}, '@@RESPONSE@@'
     if plotting:
-        print get_plot(int(plotting))
+        print '@@RESPONSE@@', get_plot(int(plotting)), '@@RESPONSE@@'
     if target_temp:
         send_target(target_temp)
     if set_temp:

@@ -290,8 +290,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.update_plot = function(value) {
         var args = "--plot:" + value;
         socket.emit('control-commands', 'runscript~report-log~thermo_control~'+args, function(run_result) {
-            console.log(run_result);
-            // '...@@RESPONSE@@ [{'timestamp': '22:13', 'temp': '21.7\n'}] @@RESPONSE@@...';
+            // console.log(run_result);
+            // '...@@RESPONSE@@ [{'timestamp': '22:15', 'target': '0', 'temp': '19.9\n'}] @@RESPONSE@@...';
             vm.extract_report(vm.update_report_response_text);
             vm.update_report_response_text = '';
             vm.nvd3_api.update();
@@ -300,6 +300,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.extract_report = function(data) {
         var i;
+        // data: @@RESPONSE@@ [{'timestamp': '22:6', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:7', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:8', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:9', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:10', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:11', 'target': '0', 'temp': '19.7\n'}, {'timestamp': '22:12', 'target': '0', 'temp': '20.0\n'}, {'timestamp': '22:13', 'target': '0', 'temp': '19.8\n'}, {'timestamp': '22:14', 'target': '0', 'temp': '19.8\n'}, {'timestamp': '22:15', 'target': '0', 'temp': '19.9\n'}] @@RESPONSE@@
         var response = vm.get_response_string(data);
 
         if (response !== undefined) {
@@ -439,5 +440,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.update_temperatures()
     $interval(vm.update_temperatures, 10000);
+    $interval(function() { vm.update_plot(10); }, 10000);
 });
 
