@@ -1,5 +1,6 @@
 var support_panel = angular.module('HomeControl', ['nvd3']);
-var socket = io.connect('http://10.0.0.22:5000');
+var host_address = "10.0.0.22:5000";
+var socket = io.connect('http://'+host_address);
 
 support_panel.controller('mainController', function($interval, $scope, $http) {
     var vm = this;
@@ -67,10 +68,9 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.nvd3_data = [];
     vm.temperature_settings_text = [];
     vm.current_temp = 0.0;
+    vm.target_temp = 0.0;
     vm.update_temperatures_response_text = '';
     vm.update_report_response_text = '';
-    vm.target_temperature_text = 0;
-    vm.target_temperature = 0;
     vm.time_queue = [];
     vm.enable_time = false;
     vm.switch_on = false;
@@ -284,6 +284,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         var response = vm.get_response_string(data);
         if (response !== undefined) {
             vm.current_temp = response.temperature;
+            vm.target_temp = response.target;
         }
     };
 
@@ -438,8 +439,26 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         });
     };
 
-    vm.update_temperatures()
-    $interval(vm.update_temperatures, 10000);
-    $interval(function() { vm.update_plot(10); }, 10000);
+    vm.fetch_temperatures = function(){
+        //fetch temperatures immediately
+        $http.get('http://'+host_address+'/fetch_temperatures').then(successCallback, errorCallback);         
+    };
+
+    function successCallback(response){
+        console.log(response);
+        response = vm.get_response_string(response.data)
+        if (response != undefined) {
+            vm.current_temp = response.temperature;
+            vm.target_temp = response.target;
+        }
+    };
+
+    function errorCallback(error){
+        //error code
+    };
+
+    vm.fetch_temperatures();
+    $interval(vm.update_temperatures, 20000);
+    // $interval(function() { vm.update_plot(10); }, 10000);
 });
 

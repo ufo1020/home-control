@@ -8,9 +8,6 @@ import threading
 
 g_target_temperature = 0
 g_target_temperature_list = []
-g_next_temperature = 0
-g_next_timer_countdown = 0
-g_next_timer_valid = False
 
 SETTLING_BUFFER_C = 1
 MONITOR_TIMEOUT_S = 60
@@ -48,19 +45,17 @@ class comms_thread(threading.Thread):
 
     def handle_message(self, message):
         # input format: 
-        # --set:1-2-3
+        # --set:20-07-00
         # --delete:2-3-4 
-        # --target:14
-        # --get
+        # --target:14 
+        # --get : get target temperature
         contents = message.split(":")
         if (len(contents) < 1):
             return
         command = contents[0]
 
         global g_target_temperature
-        global g_next_timer_valid
-        global g_next_temperature
-        global g_next_timer_countdown
+        global g_target_temperature_list;
 
         if command == "--target":
             temperature = int(contents[1])
@@ -90,13 +85,8 @@ class comms_thread(threading.Thread):
                 next_timer = datetime.datetime(tmw.year, tmw.month, tmw.day, time_h, time_m)
             else:
                 next_timer = datetime.datetime(now.year, now.month, now.day, time_h, time_m)
-            g_next_timer_countdown = (next_timer - now).seconds / MONITOR_TIMEOUT_S
-
-            if g_next_timer_countdown < 0:
-                raise Exception('next timer cannot be negative')
-
-            g_next_temperature = temperature
-            g_next_timer_valid = True
+            # g_next_timer_countdown = (next_timer - now).seconds / MONITOR_TIMEOUT_S
+            g_target_temperature_list.append({'time':next_timer, 'temp':temperature})
         elif command == "--delete":
             args = contents[1].split("-")
             if len(args) is not 3:
@@ -104,7 +94,7 @@ class comms_thread(threading.Thread):
         elif command == "--get":
             return g_target_temperature
 
-        print "set target:" + str(g_target_temperature) + " next temp:" + str(g_next_temperature) + " next timer:" + str(g_next_timer_countdown)
+        print "set target:" + str(g_target_temperature)
 
     def run(self):
         self.listening()
@@ -119,18 +109,23 @@ class control_thread(threading.Thread):
 
     def monitoring(self):
         global g_target_temperature
-        global g_next_timer_valid
-        global g_next_temperature
-        global g_next_timer_countdown
+        global g_target_temperature_list
 
-        if g_next_timer_valid:
-            print "g_next_timer_countdown: " + str(g_next_timer_countdown)
-            if g_next_timer_countdown > 0:
-                g_next_timer_countdown -= 1
-            elif g_next_timer_countdown == 0:
-                g_target_temperature = g_next_temperature
+        if len(g_target_temperature_list) > 0:
+            next_timer = g_target_temperature_list[0]['time']
+            if datetime.datetime.now() > next_timer:
+                g_target_temperature = g_target_temperature_list[0]['temp']
+                g_target_temperature_list.pop(0)
                 print "triggered, new target is: " + str(g_target_temperature)
-                g_next_timer_valid = False
+        # print g_target_temperature_list
+        # if g_next_timer_valid:
+        #     print "g_next_timer_countdown: " + str(g_next_timer_countdown)
+        #     if g_next_timer_countdown > 0:
+        #         g_next_timer_countdown -= 1
+        #     elif g_next_timer_countdown == 0:
+        #         g_target_temperature = g_next_temperature
+        #         print "triggered, new target is: " + str(g_target_temperature)
+        #         g_next_timer_valid = False
 
         current_temperature = float(thermo_utility.get_temperatures())
         if current_temperature + SETTLING_BUFFER_C < g_target_temperature:

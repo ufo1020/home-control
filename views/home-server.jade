@@ -28,6 +28,8 @@ body(ng-controller='mainController as ctrl')
             div.blur-background
               div.text-container
                 span.text {{ctrl.current_temp}}
+              div.text-container-small
+                span.text-small {{ctrl.target_temp}}
             div.main-button
               paper-button.main-button-button(raised ng-click='ctrl.turn_on()' class ="red") Heater ON 
             div.main-button

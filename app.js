@@ -38,8 +38,7 @@ io.on('connection', function (client) {
 
             options.args = fields[3].split(':');
             var script_name = fields[2]+'.py';
-
-		    var script_runner = new python_shell(script_name, options);
+            var script_runner = new python_shell(script_name, options);
             script_runner.on('message', function(message) {
                 if (log_target != 'logs') {
                     client.volatile.emit(log_target, message);
@@ -68,4 +67,19 @@ io.on('connection', function (client) {
             callback(null, -1)
         }
     });
+});
+
+app.get('/fetch_temperatures', function(req, res) {
+    var options = {
+        mode: 'text',
+        pythonOptions: ['-u'],      // to turn off output buffering
+        scriptPath: '/root/home-control/python-scripts/'
+    };
+
+    options.args = ['--get'];
+    var script_name = 'thermo_control.py';
+    var script_runner = new python_shell(script_name, options);
+    script_runner.on('message', function(message) {
+        res.send(message)
+    });    
 });
