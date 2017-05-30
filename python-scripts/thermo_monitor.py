@@ -93,7 +93,11 @@ class comms_thread(threading.Thread):
                 return
         elif command == "--get":
             return g_target_temperature
-
+        elif command == "--gettimers":
+            timers = []
+            for item in g_target_temperature_list:
+                timers.append({'time':item['time'].strftime("%H:%M"), 'temp':item['temp']})
+            return timers
         print "set target:" + str(g_target_temperature)
 
     def run(self):

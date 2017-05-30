@@ -70,11 +70,12 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.current_temp = 0.0;
     vm.target_temp = 0.0;
     vm.update_temperatures_response_text = '';
+    vm.update_timers_response_text = '';
     vm.update_report_response_text = '';
     vm.time_queue = [];
     vm.enable_time = false;
     vm.switch_on = false;
-
+    vm.timers = '';
 
     vm.range  = function(start, end, step = 1, offset = 0) {
         return Array.apply(null, Array((Math.abs(end - start) + ((offset||0)*2))/(step||1)+1)) .map(function(_, i)
@@ -107,6 +108,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     socket.on('temp-log', function(data) {
         vm.update_temperatures_response_text += data;
     });
+
+    socket.on('timer-log', function(data) {
+        vm.update_timers_response_text += data;
+    });    
 
     socket.on('mode-log', function(data) {
         vm.mode_response_text += data;
@@ -288,6 +293,21 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         }
     };
 
+    vm.update_timers = function() {
+        socket.emit('control-commands', 'runscript~timer-log~thermo_control~--gettimers', function(run_result) {
+            // '...@@RESPONSE@@ [{'temp': 17, 'time': '04:20'}] @@RESPONSE@@...';
+            var response = vm.get_response_string(vm.update_timers_response_text);
+            if (response !== undefined) {
+                vm.timers = '';
+                for (var i = 0; i < response.length; i++) {
+                   vm.timers += ' '+response[i].temp+'@'+response[i].time;
+               }
+            }
+            vm.update_timers_response_text = '';
+        });
+
+    };
+
     vm.update_plot = function(value) {
         var args = "--plot:" + value;
         socket.emit('control-commands', 'runscript~report-log~thermo_control~'+args, function(run_result) {
@@ -445,7 +465,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     function successCallback(response){
-        console.log(response);
         response = vm.get_response_string(response.data)
         if (response != undefined) {
             vm.current_temp = response.temperature;
@@ -459,6 +478,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.fetch_temperatures();
     $interval(vm.update_temperatures, 20000);
+    $interval(vm.update_timers, 20000);
     // $interval(function() { vm.update_plot(10); }, 10000);
 });
 

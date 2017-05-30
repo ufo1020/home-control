@@ -60,6 +60,9 @@ def get_plot(required_lines):
     f.close()
     return  items
 
+def send_get_timers():
+    reponse = send("--gettimers")
+    return reponse
 
 def main():
     # f = open("./log", 'a')
@@ -69,10 +72,11 @@ def main():
     # set format: --set:T-H-M  17-07-01(17 degree at 7:01)
     # del format: --del:T-H-M or T
     argParser = argparse.ArgumentParser()
-    argParser.add_argument('--get', dest="get", action="store_true", help="Get temperature")
+    argParser.add_argument('--get', dest="get", action="store_true", help="Get current temperature")
     argParser.add_argument('--plot', dest="plot", action="store", help="Get plot")
-    argParser.add_argument('--set', dest="set", action="store", help="Set temperature")
-    argParser.add_argument('--target', dest="target", action="store", help="Target temperature")
+    argParser.add_argument('--gettimers', dest="timers", action="store_true", help="Get timers")
+    argParser.add_argument('--set', dest="set", action="store", help="Set temperature with time")
+    argParser.add_argument('--target', dest="target", action="store", help="Set temperature")
     argParser.add_argument('--delete', help="Delete temperature")
 
     args = argParser.parse_args()
@@ -81,6 +85,7 @@ def main():
     set_temp = args.set
     target_temp = args.target
     del_temp = args.delete
+    get_timers = args.timers
 
     if get_temp:
         print '@@RESPONSE@@', {"temperature" : thermo_utility.get_temperatures(), "target":send_get_target()}, '@@RESPONSE@@'
@@ -93,6 +98,8 @@ def main():
         send_set(set_temp)
     if del_temp:
         send_del(del_temp)
+    if get_timers:
+        print '@@RESPONSE@@', send_get_timers(), '@@RESPONSE@@'
 
 if __name__ == "__main__":
     sys.exit(main())
