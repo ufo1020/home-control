@@ -21,7 +21,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             rightAlignYAxis: true,
             x: function(d){ return d.x; },
             y: function(d){ return d.y; },
-            yDomain: [vm.y_domain_min, vm.y_domain_max],
+            yDomain: [10, 30],
             useInteractiveGuideline: true,
             dispatch: {
                 stateChange: function(e){ console.log("stateChange"); },
@@ -31,10 +31,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             },
  
             xAxis: {
-                axisLabel: 'Time Delta (ms)'
+                axisLabel: 'Time'
             },
             yAxis: {
-                axisLabel: 'Pressure (Kpa)',
+                axisLabel: 'Temperature(C)',
                 tickFormat: function(d){
                     return d3.format('.02f')(d);
                 },
@@ -46,7 +46,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         },
         title: {
             enable: true,
-            text: "Pressure Report"
+            text: "Home Temperature"
         },
         subtitle: {
             enable: true,
@@ -65,7 +65,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             }
         }
     };
-    vm.nvd3_data = [];
+    vm.report_data = [];
     vm.temperature_settings_text = [];
     vm.current_temp = 0.0;
     vm.target_temp = 0.0;
@@ -312,7 +312,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         var args = "--plot:" + value;
         socket.emit('control-commands', 'runscript~report-log~thermo_control~'+args, function(run_result) {
             // console.log(run_result);
-            // '...@@RESPONSE@@ [{'timestamp': '22:15', 'target': '0', 'temp': '19.9\n'}] @@RESPONSE@@...';
+            // '...@@RESPONSE@@ [{'timestamp': '22:15', 'target': '0', 'temp': '19.9'}] @@RESPONSE@@...';
             vm.extract_report(vm.update_report_response_text);
             vm.update_report_response_text = '';
             vm.nvd3_api.update();
@@ -320,79 +320,20 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.extract_report = function(data) {
-        var i;
-        // data: @@RESPONSE@@ [{'timestamp': '22:6', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:7', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:8', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:9', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:10', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:11', 'target': '0', 'temp': '19.7\n'}, {'timestamp': '22:12', 'target': '0', 'temp': '20.0\n'}, {'timestamp': '22:13', 'target': '0', 'temp': '19.8\n'}, {'timestamp': '22:14', 'target': '0', 'temp': '19.8\n'}, {'timestamp': '22:15', 'target': '0', 'temp': '19.9\n'}] @@RESPONSE@@
+        // data: @@RESPONSE@@ [{'timestamp': '22:6', 'target': '0', 'temp': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:8', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:9', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:10', 'target': '0', 'temp': '19.9\n'}, {'timestamp': '22:11', 'target': '0', 'temp': '19.7\n'}, {'timestamp': '22:12', 'target': '0', 'temp': '20.0\n'}, {'timestamp': '22:13', 'target': '0', 'temp': '19.8\n'}, {'timestamp': '22:14', 'target': '0', 'temp': '19.8\n'}, {'timestamp': '22:15', 'target': '0', 'temp': '19.9\n'}] @@RESPONSE@@
         var response = vm.get_response_string(data);
 
         if (response !== undefined) {
-           var reports = response.reports;
-           if (reports[0] !== undefined) {
-               var sensor_data = new Array(Object.keys(reports[0]).length - 1);
-               for (i = 0; i < sensor_data.length; i++) {
-                   sensor_data[i] = new Array(reports.length);
-               }
-               var sensor_names = new Array(Object.keys(reports[0]).length - 1);
-               if (vm.first_timestamp === 0) {
-                   vm.first_timestamp = new Date(reports[0].time);
-               }
-               for (i = 0; i < reports.length; i++) {
-                   var timestatmp = new Date(reports[i].time);
-                   var time_offset = timestatmp - vm.first_timestamp;
-                   if (i === reports.length - 1) {
-                       // need to replace : with /
-                       vm.graph_start_time = reports[i].time.replace(/:/g, "/");
-                   }
-
-                   var sensor_index = 0;
-                   var keys = Object.keys(reports[i]);
-                   for (var key in keys) {
-                       if (keys[key] !== 'time') {
-                           // only set names once
-                           if (i === 0) {
-                               sensor_names[sensor_index] = keys[key];
-                           }
-                           var offset = 1;
-                           if (vm.sensor_scales[keys[key]]) {
-                               offset = parseFloat(vm.sensor_scales[keys[key]]);
-                           }
-                           sensor_data[sensor_index][i] = {x: time_offset, y: reports[i][keys[key]] * offset};
-                           sensor_index++;
-                       }
-                   }
-               }
-           }
-           else {
-               return;
-           }
-
-           // init buffered data only once
-           if (vm.buffered_data.length === 0) {
-               vm.buffered_data = new Array(sensor_names.length);
-               for (i = 0; i < sensor_names.length; i++) {
-                   vm.buffered_data[i] = [];
-               }
-           }
-           if (vm.report_data.length === 0) {
-               for (var i = 0; i < sensor_names.length; i++) {
-                   vm.report_data.push({values:[], key: sensor_names[i], color:vm.sensors_colors[sensor_names[i]]});
-               }
-           }
-           //Data is represented as an array of {x,y} pairs.
-           for (var i = 0; i < sensor_names.length; i++) {
-               var new_start = Object.keys(vm.buffered_data[i]).length  + Object.keys(sensor_data[i]).length - vm.graph_buffered_items
-               if (new_start < 0) {
-                    new_start = 0
-               }
-               var d = vm.buffered_data[i].slice(new_start);
-               vm.buffered_data[i] = d.concat(sensor_data[i]);
- 
-               var d = [];
-               for (var n = 0; n < Object.keys(vm.buffered_data[i]).length; n+=100/vm.sample_rate) {
-                   d.push(vm.buffered_data[i][n]);
-               }
-               vm.report_data[i].values = d;
-           }
-       }
+            vm.report_data = [{values:[], key:'Current'},{values:[], key:'Target'}];
+            var current = [];
+            var target = [];
+            for (i = 0; i < response.length; i++) {
+                current.push(response[i].temp);
+                target.push(response[i].target);
+            }
+            vm.report_data[0].values = current;
+            vm.report_data[1].values = target;
+        };
     };
 
     vm.set_temperatures = function(value) {
@@ -479,6 +420,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.fetch_temperatures();
     $interval(vm.update_temperatures, 20000);
     $interval(vm.update_timers, 20000);
-    // $interval(function() { vm.update_plot(10); }, 10000);
+    $interval(function() { vm.update_plot(10); }, 10000);
 });
 
