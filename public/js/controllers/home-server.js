@@ -7,7 +7,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.settle_temperature = 2 // 2 degrees for settling 
     vm.nvd3_options = {
         chart: {
-            type: 'lineWithFocusChart',
+            type: 'lineChart',
             width: 1200,
             height: 600,
             margin : {
@@ -19,8 +19,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             clipEdge: true,
             interpolate: 'monotone',
             rightAlignYAxis: true,
-            x: function(d){ return d.x; },
-            y: function(d){ return d.y; },
             yDomain: [10, 30],
             useInteractiveGuideline: true,
             dispatch: {
@@ -31,7 +29,11 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             },
  
             xAxis: {
-                axisLabel: 'Time'
+                axisLabel: 'Time',
+                tickFormat: function(d){
+                    // d3 time formatting
+                    return d3.time.format('%h:%m')(new Date(d));
+                }
             },
             yAxis: {
                 axisLabel: 'Temperature(C)',
@@ -328,8 +330,9 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             var current = [];
             var target = [];
             for (i = 0; i < response.length; i++) {
-                current.push(response[i].temp);
-                target.push(response[i].target);
+                var time = response[i].timestamp;
+                current.push({x: time, y:parseInt(response[i].temp)});
+                target.push({x:time, y:parseInt(response[i].target)});
             }
             vm.report_data[0].values = current;
             vm.report_data[1].values = target;
@@ -417,9 +420,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         //error code
     };
 
+    console.log(Date.parseDate('22:28', 'm-h'));
     vm.fetch_temperatures();
     $interval(vm.update_temperatures, 20000);
     $interval(vm.update_timers, 20000);
-    $interval(function() { vm.update_plot(10); }, 10000);
+    // $interval(function() { vm.update_plot(1440); }, 10000);
 });
 
