@@ -53,7 +53,8 @@ def get_plot(required_lines):
         line = line.split(",")
         date = parse_date(line[0])
         t = line[1].rstrip()
-        item["timestamp"] = str(date.hour) + ":" + str(date.minute)
+        item["timestamp"] = date.isoformat()
+        # item["timestamp"] = str(date.hour) + ":" + str(date.minute)
         item["temp"] = t
         item["target"] = target
         items.append(item)

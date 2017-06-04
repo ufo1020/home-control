@@ -19,6 +19,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             clipEdge: true,
             interpolate: 'monotone',
             rightAlignYAxis: true,
+            x: function(d){ return d.x; },
+            y: function(d){ return d.y; },
             yDomain: [10, 30],
             useInteractiveGuideline: true,
             dispatch: {
@@ -32,7 +34,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 axisLabel: 'Time',
                 tickFormat: function(d){
                     // d3 time formatting
-                    return d3.time.format('%h:%m')(new Date(d));
+                    return d3.time.format('%X')(new Date(d));
                 }
             },
             yAxis: {
@@ -420,10 +422,9 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         //error code
     };
 
-    console.log(Date.parseDate('22:28', 'm-h'));
     vm.fetch_temperatures();
     $interval(vm.update_temperatures, 20000);
     $interval(vm.update_timers, 20000);
-    // $interval(function() { vm.update_plot(1440); }, 10000);
+    $interval(function() { vm.update_plot(1440); }, 10000);
 });
 
