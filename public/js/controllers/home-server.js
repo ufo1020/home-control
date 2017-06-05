@@ -8,20 +8,20 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.nvd3_options = {
         chart: {
             type: 'lineChart',
-            width: 1200,
-            height: 600,
+            width: 640,
+            height: 480,
             margin : {
                 top: 20,
                 right: 20,
                 bottom: 40,
                 left: 55
             },
-            clipEdge: true,
-            interpolate: 'monotone',
-            rightAlignYAxis: true,
+            // clipEdge: true,
+            // interpolate: 'monotone',
+            // rightAlignYAxis: true,
             x: function(d){ return d.x; },
             y: function(d){ return d.y; },
-            yDomain: [10, 30],
+            yDomain: [5, 30],
             useInteractiveGuideline: true,
             dispatch: {
                 stateChange: function(e){ console.log("stateChange"); },
@@ -31,11 +31,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             },
  
             xAxis: {
-                axisLabel: 'Time',
-                tickFormat: function(d){
-                    // d3 time formatting
-                    return d3.time.format('%X')(new Date(d));
-                }
+                axisLabel: 'Time'
             },
             yAxis: {
                 axisLabel: 'Temperature(C)',
@@ -328,13 +324,13 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         var response = vm.get_response_string(data);
 
         if (response !== undefined) {
-            vm.report_data = [{values:[], key:'Current'},{values:[], key:'Target'}];
+            vm.report_data = [{values:[], key:'Current', color:'#ff0000'},{values:[], key:'Target', color:'#ffbf00'}];
             var current = [];
             var target = [];
             for (i = 0; i < response.length; i++) {
-                var time = response[i].timestamp;
-                current.push({x: time, y:parseInt(response[i].temp)});
-                target.push({x:time, y:parseInt(response[i].target)});
+                var time = new Date(response[i].timestamp);
+                current.push({x:time, y:parseFloat(response[i].temp)});
+                target.push({x:time, y:parseFloat(response[i].target)});
             }
             vm.report_data[0].values = current;
             vm.report_data[1].values = target;
