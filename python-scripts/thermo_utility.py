@@ -1,5 +1,6 @@
 import Adafruit_BBIO.ADC as ADC
 import os.path
+import zmq
 
 # Temperature senor:TI TMP36
 TMP_SENSOR_INPUT_PIN = 'P9_40'
@@ -8,6 +9,17 @@ GPIO_FILE_PATH  = "/sys/class/gpio/gpio60/value"
 TEMPERATURE_LOG_FILE_PATH = "/root/home-control/python-scripts/temperature.log"
 LOCAL_PORT = "9001"
 LOCAL_ADDRESS = "tcp://127.0.0.1" + ":" + LOCAL_PORT
+
+def send(message):
+    context = zmq.Context()
+    sock = context.socket(zmq.REQ)
+    sock.connect(LOCAL_ADDRESS)
+    sock.send(message)
+    return sock.recv()
+
+def send_get_target():
+    reponse = send("--get")
+    return reponse
 
 def get_temperatures():
     ADC.setup()

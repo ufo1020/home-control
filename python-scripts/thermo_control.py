@@ -2,7 +2,6 @@ import sys
 import argparse
 import os.path
 import datetime
-import zmq
 import thermo_utility
 
 SETTING_FILE_PATH = "/root/Code/thermo_control/python-scripts/settings.cfg"
@@ -10,32 +9,19 @@ SETTING_FILE_PATH = "/root/Code/thermo_control/python-scripts/settings.cfg"
 def parse_date(date_string):
     return datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
 
-def send(message):
-    context = zmq.Context()
-    sock = context.socket(zmq.REQ)
-    sock.connect(thermo_utility.LOCAL_ADDRESS)
-    sock.send(message)
-    return sock.recv()
-
 def send_target(message):
-    reponse = send("--target:" + message)
+    reponse = thermo_utility.send("--target:" + message)
     # print reponse
 
 def send_set(message):
-    reponse = send("--set:" + message)
+    reponse = thermo_utility.send("--set:" + message)
     # print reponse
 
 def send_del(message):
-    reponse = send("--delete:" + message)
+    reponse = thermo_utility.send("--delete:" + message)
     # print reponse
 
-def send_get_target():
-    reponse = send("--get")
-    return reponse
-
 def get_plot(required_lines):
-    target = send_get_target()
-
     if not os.path.exists(thermo_utility.TEMPERATURE_LOG_FILE_PATH):
         return False
     f = open(thermo_utility.TEMPERATURE_LOG_FILE_PATH, 'r')
@@ -51,8 +37,11 @@ def get_plot(required_lines):
             continue
         item = {}
         line = line.split(",")
+        assert len(line) == 3, "a line should have 3 fields not %d" % len(line)
+
         date = parse_date(line[0])
         t = line[1].rstrip()
+        target = line[2].rstrip()
         item["timestamp"] = date.isoformat()
         # item["timestamp"] = str(date.hour) + ":" + str(date.minute)
         item["temp"] = t
@@ -62,7 +51,7 @@ def get_plot(required_lines):
     return  items
 
 def send_get_timers():
-    reponse = send("--gettimers")
+    reponse = thermo_utility.send("--gettimers")
     return reponse
 
 def main():

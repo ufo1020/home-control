@@ -2,7 +2,6 @@
   "name": "home-control",
   "private": true,
   "dependencies": {
-    "express": "*",
     "socket.io": "*",
     "socket.io-client": "*",
     "python-shell": "git@github.com:extrabacon/python-shell.git",
