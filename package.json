@@ -3,6 +3,8 @@
   "private": "true",
   "dependencies": {
     "socket.io": "*",
+    "python-shell": "*",
+    "jade": "*",
     "express": "*"
   }
 }
