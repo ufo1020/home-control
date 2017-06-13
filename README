@@ -1,1 +1,30 @@
+OS setup:
+- Debian image "Debian 8.7 2017-03-19 4GB SD LXQT" from https://beagleboard.org/latest-images
+- run sudo /opt/scripts/tools/update_kernel.sh
+- Kernal version: Linux beaglebone 4.4.68-ti-r108
+
+Device tree setup for ADC:
+- Enable ADC from command line: sudo sh -c "echo 'BB-ADC' > /sys/devices/platform/bone_capemgr/slots"
+- Enable ADC from /boot/uEnv.txt, add:
+     -- cape_enable=bone_capemgr.enable_partno=BB-ADC
+- Check /sys/devices/platform/bone_capemgr/slots, should have:
+     -- '4: P-O-L-   0 Override Board Name,00A0,Override Manuf,BB-ADC'
+
+GPIO access setup:
+from http://www.embeddedhobbyist.com/2016/05/beaglebone-black-gpio-permissions/
+- sudo groupadd gpio
+- sudo usermod -aG gpio debian(default user)
+- sudo vi /etc/udev/rules.d/99-gpio.rules
+  -- SUBSYSTEM=="gpio*", PROGRAM="/bin/sh -c 'chown -R root:gpio /sys/class/gpio; chmod -R 770 /sys/class/gpio; chown -R root:gpio /sys/devices/platform/ocp/4????000.gpio/gpio/; chmod -R 770 /sys/devices/platform/ocp/4????000.gpio/gpio/'"
+
+- sudo reboot
+
+- to check it's working:
+  - echo 49 > /sys/class/gpio/export
+  - ls -al /sys/class/gpio/
+    - drwxrwx---  2 root gpio    0 May 16 21:09 .
+	  	drwxr-xr-x 55 root root    0 May 16 21:03 ..
+		  -rwxrwx---  1 root gpio 4096 May 16 21:09 export
+		  lrwxrwxrwx  1 root gpio    0 May 16 21:09 gpio49 -> ../../devices/platform/ocp/4804c000.gpio/gpio/gpio49
+
 // bower install polymerelements/iron-image

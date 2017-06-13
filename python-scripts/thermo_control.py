@@ -78,7 +78,7 @@ def main():
     get_timers = args.timers
 
     if get_temp:
-        print '@@RESPONSE@@', {"temperature" : thermo_utility.get_temperatures(), "target":send_get_target()}, '@@RESPONSE@@'
+        print '@@RESPONSE@@', {"temperature" : thermo_utility.get_temperatures(), "target":thermo_utility.send_get_target()}, '@@RESPONSE@@'
     if plotting:
         print '@@RESPONSE@@', get_plot(int(plotting)), '@@RESPONSE@@'
     if target_temp:

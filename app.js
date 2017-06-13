@@ -33,7 +33,7 @@ io.on('connection', function (client) {
             var options = {
                 mode: 'text',
                 pythonOptions: ['-u'],      // to turn off output buffering
-                scriptPath: '/root/home-control/python-scripts/'
+                scriptPath: '/home/debian/home-control/python-scripts/'
             };
 
             options.args = fields[3].split(':');
@@ -73,7 +73,7 @@ app.get('/fetch_temperatures', function(req, res) {
     var options = {
         mode: 'text',
         pythonOptions: ['-u'],      // to turn off output buffering
-        scriptPath: '/root/home-control/python-scripts/'
+        scriptPath: '/home/debian/home-control/python-scripts/'
     };
 
     options.args = ['--get'];

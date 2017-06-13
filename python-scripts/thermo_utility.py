@@ -1,12 +1,14 @@
-import Adafruit_BBIO.ADC as ADC
 import os.path
 import zmq
 
 # Temperature senor:TI TMP36
 TMP_SENSOR_INPUT_PIN = 'P9_40'
+TMP_SENSOR_ADC_INPUT_PATH = '/sys/bus/iio/devices/iio:device0/in_voltage1_raw'
+MAX_ADC_RAW_VALUE_OUTPUT = 4096
+
 GPIO_FILE_PATH  = "/sys/class/gpio/gpio60/value"
 
-TEMPERATURE_LOG_FILE_PATH = "/root/home-control/python-scripts/temperature.log"
+TEMPERATURE_LOG_FILE_PATH = "/home/debian/home-control/python-scripts/temperature.log"
 LOCAL_PORT = "9001"
 LOCAL_ADDRESS = "tcp://127.0.0.1" + ":" + LOCAL_PORT
 
@@ -22,9 +24,12 @@ def send_get_target():
     return reponse
 
 def get_temperatures():
-    ADC.setup()
-    reading = ADC.read(TMP_SENSOR_INPUT_PIN)
-    millivolts = reading * 1800  # 1.8V reference = 1800 mV
+    if not os.path.exists(TMP_SENSOR_ADC_INPUT_PATH):
+        return 0
+
+    f = open(TMP_SENSOR_ADC_INPUT_PATH, 'r')
+    reading = int(f.read())
+    millivolts = (float(reading)/float(MAX_ADC_RAW_VALUE_OUTPUT)) * 1800  # 1.8V reference = 1800 mV
     temp_c = (millivolts - 500) / 10
     return "%.1f" % temp_c
 
