@@ -8,8 +8,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.nvd3_options = {
         chart: {
             type: 'lineChart',
-            width: 640,
-            height: 480,
+            width: window.innerWidth,
+            height: window.innerHeight * 0.8,
             margin : {
                 top: 20,
                 right: 20,
@@ -21,7 +21,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             // rightAlignYAxis: true,
             x: function(d){ return d.x; },
             y: function(d){ return d.y; },
-            yDomain: [5, 30],
+            yDomain: [10, 25],
             useInteractiveGuideline: true,
             dispatch: {
                 stateChange: function(e){ console.log("stateChange"); },
@@ -31,7 +31,11 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             },
  
             xAxis: {
-                axisLabel: 'Time'
+                axisLabel: 'Time',
+                tickFormat: function(d) {
+                  //nvd3 date format: https://bl.ocks.org/zanarmstrong/ca0adb7e426c12c06a95
+                  return d3.time.format('%H:%M')(new Date(d)) 
+               }
             },
             yAxis: {
                 axisLabel: 'Temperature(C)',
@@ -46,22 +50,14 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         },
         title: {
             enable: true,
-            text: "Home Temperature"
+            text: "Home temperature"
         },
         subtitle: {
             enable: true,
-            text: "Pressure logging",
+            text: "1 day temperature data",
             css: {
                 'text-align': 'center',
                 'margin': '10px 13px 0px 7px'
-            }
-        },
-        caption: {
-            enable: true,
-            html: "<b>Report 1.</b> ",
-            css: {
-                "text-align": "justify",
-                "margin": "10px 13px 0px 7px"
             }
         }
     };
@@ -314,18 +310,19 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         socket.emit('control-commands', 'runscript~report-log~thermo_control~'+args, function(run_result) {
             // console.log(run_result);
             // '...@@RESPONSE@@ [{'timestamp': '22:15', 'target': '0', 'temp': '19.9'}] @@RESPONSE@@...';
-            vm.extract_report(vm.update_report_response_text);
+            var response = vm.get_response_string(vm.update_report_response_text);
+            if (response !== undefined) {
+              vm.extract_report(response);
+            }
             vm.update_report_response_text = '';
             vm.nvd3_api.update();
         });
     };
 
-    vm.extract_report = function(data) {
-        // data: @@RESPONSE@@ [{'timestamp': '22:6', 'target': '0', 'temp': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temp': '19.9\n'}] @@RESPONSE@@
-        var response = vm.get_response_string(data);
-
+    vm.extract_report = function(response) {
+        // data: [{'timestamp': '22:6', 'target': '0', 'temp': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temp': '19.9\n'}] 
         if (response !== undefined) {
-            vm.report_data = [{values:[], key:'Current', color:'#ff0000'},{values:[], key:'Target', color:'#ffbf00'}];
+            vm.report_data = [{values:[], key:'Current', color:'#ff0000'},{values:[], key:'Target', color:'#ffbf00', area: true}];
             var current = [];
             var target = [];
             for (i = 0; i < response.length; i++) {
@@ -404,10 +401,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.fetch_temperatures = function(){
         //fetch temperatures immediately
-        $http.get('http://'+host_address+'/fetch_temperatures').then(successCallback, errorCallback);         
+        $http.get('http://'+host_address+'/fetch_temperatures').then(fetch_temperatures_successCallback, errorCallback);
     };
 
-    function successCallback(response){
+    function fetch_temperatures_successCallback(response){
         response = vm.get_response_string(response.data)
         if (response != undefined) {
             vm.current_temp = response.temperature;
@@ -419,7 +416,20 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         //error code
     };
 
+    vm.fetch_plot = function(){
+        //fetch plot immediately
+        $http.get('http://'+host_address+'/fetch_plot').then(fetch_plot_successCallback, errorCallback);
+    };
+
+    function fetch_plot_successCallback(response){
+        response = vm.get_response_string(response.data)
+        if (response != undefined) {
+            vm.extract_report(response);
+        }
+    };
+
     vm.fetch_temperatures();
+    vm.fetch_plot();
     $interval(vm.update_temperatures, 20000);
     $interval(vm.update_timers, 20000);
     $interval(function() { vm.update_plot(1440); }, 60000);

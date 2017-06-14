@@ -83,3 +83,18 @@ app.get('/fetch_temperatures', function(req, res) {
         res.send(message)
     });    
 });
+
+app.get('/fetch_plot', function(req, res) {
+    var options = {
+        mode: 'text',
+        pythonOptions: ['-u'],      // to turn off output buffering
+        scriptPath: '/home/debian/home-control/python-scripts/'
+    };
+
+    options.args = ['--plot', '1440'];
+    var script_name = 'thermo_control.py';
+    var script_runner = new python_shell(script_name, options);
+    script_runner.on('message', function(message) {
+        res.send(message)
+    });    
+});
