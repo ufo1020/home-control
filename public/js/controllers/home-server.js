@@ -322,7 +322,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.extract_report = function(response) {
         // data: [{'timestamp': '22:6', 'target': '0', 'temp': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temp': '19.9\n'}] 
         if (response !== undefined) {
-            vm.report_data = [{values:[], key:'Current', color:'#ff0000'},{values:[], key:'Target', color:'#ffbf00', area: true}];
+            vm.report_data = [{values:[], key:'Current', color:'#0000ff'},{values:[], key:'Target', color:'#ff0000', area: true}];
             var current = [];
             var target = [];
             for (i = 0; i < response.length; i++) {

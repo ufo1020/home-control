@@ -32,21 +32,24 @@ def get_plot(required_lines):
     line_number = 0
     items = []
     for line in lines:
-        if line_number < start_line:
-            line_number += 1
-            continue
-        item = {}
-        line = line.split(",")
-        assert len(line) == 3, "a line should have 3 fields not %d" % len(line)
+        try:
+            if line_number < start_line:
+                line_number += 1
+                continue
+            item = {}
+            line = line.split(",")
+            assert len(line) == 3, "a line should have 3 fields not %d" % len(line)
 
-        date = parse_date(line[0])
-        t = line[1].rstrip()
-        target = line[2].rstrip()
-        item["timestamp"] = date.isoformat()
-        # item["timestamp"] = str(date.hour) + ":" + str(date.minute)
-        item["temp"] = t
-        item["target"] = target
-        items.append(item)
+            date = parse_date(line[0])
+            t = line[1].rstrip()
+            target = line[2].rstrip()
+            item["timestamp"] = date.isoformat()
+            # item["timestamp"] = str(date.hour) + ":" + str(date.minute)
+            item["temp"] = t
+            item["target"] = target
+            items.append(item)
+        except:
+            continue
     f.close()
     return  items
 
