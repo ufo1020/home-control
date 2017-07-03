@@ -1,5 +1,5 @@
 var support_panel = angular.module('HomeControl', ['nvd3']);
-var host_address = "10.0.0.22:5000";
+var host_address = "192.168.1.142:5000";
 var socket = io.connect('http://'+host_address);
 
 support_panel.controller('mainController', function($interval, $scope, $http) {
@@ -239,8 +239,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
 
     vm.turn_on = function() {
-        // turn on default 20
-        vm.set_temperatures(20);
+        // turn on default 18
+		var target = document.querySelector('#target');
+		console.log('going to ', target.value);
+        vm.set_temperatures(target.value);
     };
 
     vm.turn_off = function() {
@@ -339,7 +341,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         // Set target temperature
         var args = "--target:" + value;
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
-            console.log(run_result);
+            //console.log(run_result);
         });
     };
 

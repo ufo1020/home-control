@@ -29,6 +29,15 @@
   top:30px;left:0px;right:0;bottom:0;
 }
 
+.slider {
+  position:relative;
+  overflow:hidden;
+  top:30px;left:0px;right:0;bottom:0;
+  background-color:Silver;
+  border-radius: 6px;
+  min-height: 50px;
+}
+
 .main-button-button {
   width:200px;
   margin-top:15px;

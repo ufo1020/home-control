@@ -11,7 +11,7 @@ python /home/debian/home-control/python-scripts/temperature_monitor.py&
 # https://askubuntu.com/questions/672586/ssh-r-wont-run-in-etc-rc-local
 # Tested with result of ~25s!!! for network to be ready 
 (
-until ping -nq -c3 10.0.0.138; do
+until ping -nq -c3 192.168.1.1; do
    # Waiting for network
    sleep 5
 done

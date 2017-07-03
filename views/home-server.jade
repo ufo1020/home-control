@@ -33,6 +33,8 @@ body(ng-controller='mainController as ctrl')
                 span.text {{ctrl.current_temp}}
               div.text-container-small
                 span.text-small {{ctrl.target_temp}}
+            div.slider
+              paper-slider(id="target" class ="red" value="18" min="8" max="30" pin editable)				
             div.main-button
               paper-button.main-button-button(raised ng-click='ctrl.turn_on()' class ="red") Heater ON 
             div.main-button
