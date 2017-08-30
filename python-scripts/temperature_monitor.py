@@ -22,7 +22,7 @@ def save_to_file():
     #    f.close()
     #else:
     f = open(thermo_utility.TEMPERATURE_LOG_FILE_PATH, "a")
-    f.write(str(datetime.datetime.now()) + ","+str(thermo_utility.get_temperatures())+","+str(thermo_utility.send_get_target())+"\n")
+    f.write(str(datetime.datetime.now()) + ","+str(thermo_utility.get_filtered_temperature())+","+str(thermo_utility.send_get_target())+"\n")
     f.close()
 
 def main():

@@ -9,7 +9,8 @@ import threading
 g_target_temperature = 0
 g_target_temperature_list = []
 
-SETTLING_BUFFER_C = 1
+SETTLING_BUFFER_UP_C = 1.0
+SETTLING_BUFFER_DOWN_C = 0.5
 MONITOR_TIMEOUT_S = 60
 ON = "1"
 OFF = "0"
@@ -131,16 +132,16 @@ class control_thread(threading.Thread):
         #         print "triggered, new target is: " + str(g_target_temperature)
         #         g_next_timer_valid = False
 
-        current_temperature = float(thermo_utility.get_temperatures())
-        if current_temperature + SETTLING_BUFFER_C < g_target_temperature:
+        current_temperature = float(thermo_utility.get_filtered_temperature())
+        if current_temperature + SETTLING_BUFFER_DOWN_C < g_target_temperature:
             if (self.heater_state != ON):
                 self.heater_state = ON
                 thermo_utility.set_switch(self.heater_state)
-        elif current_temperature > g_target_temperature + SETTLING_BUFFER_C:
+        elif current_temperature > g_target_temperature + SETTLING_BUFFER_UP_C:
             if (self.heater_state != OFF):
                 self.heater_state = OFF
                 thermo_utility.set_switch(self.heater_state)
-        print "heater: " + str(self.heater_state) + " temp:" + str(current_temperature) + " target:" + str(g_target_temperature)
+        # print "heater: " + str(self.heater_state) + " temp:" + str(current_temperature) + " target:" + str(g_target_temperature)
 
     def run(self):
         # print "Starting " + self.name

@@ -1,5 +1,6 @@
 import os.path
 import zmq
+import time
 
 # Temperature senor:TI TMP36
 TMP_SENSOR_INPUT_PIN = 'P9_40'
@@ -31,6 +32,20 @@ def get_temperatures():
     reading = int(f.read())
     millivolts = (float(reading)/float(MAX_ADC_RAW_VALUE_OUTPUT)) * 1800  # 1.8V reference = 1800 mV
     temp_c = (millivolts - 500) / 10
+    return "%.1f" % temp_c
+
+def get_filtered_temperature():
+    num_of_samples = 10
+    samples = []
+    for i in range(num_of_samples):
+        t = float(get_temperatures())
+        samples.append(t)
+        time.sleep(0.5)
+    samples.sort()
+    # remove min/max and average
+    samples.pop(0)
+    samples.pop()
+    temp_c = sum(samples) / float(len(samples))
     return "%.1f" % temp_c
 
 def get_switch_state():
