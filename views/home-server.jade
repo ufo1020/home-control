@@ -39,24 +39,24 @@ body(ng-controller='mainController as ctrl')
               paper-button.main-button-button(raised ng-click='ctrl.turn_on()' class ="red") Heater ON 
             div.main-button
               paper-button.main-button-button(raised ng-click='ctrl.turn_off()' class ="green") Heater OFF 
-        div.image-background(name='time-page')
+        div.image-background(name='plot-page')
+          div.blur-background-plot
+          div.center-container-plot
+            nvd3(options='ctrl.nvd3_options' data='ctrl.report_data', api='ctrl.nvd3_api')
+        div.image-background(name='power-page')
           div.blur-background-time
           div.center-container-time
               paper-time-input.time-input(id='time_input' format="24")
               paper-slider.time-slider(id='time_target' class ="red" min="8" max="30" value="18" pin editable)
               paper-button.time-button(raised ng-click='ctrl.add_timer()') Add timer
               span {{ctrl.timers}}
-        div.image-background(name='plot-page')
-          div.blur-background-plot
-          div.center-container-plot
-            nvd3(options='ctrl.nvd3_options' data='ctrl.report_data', api='ctrl.nvd3_api')
 
       div.bottom-menu
         div.bottom-menu-container
           div.botton
-            paper-fab.blue(icon="icons:query-builder" title="timer" ng-click="ctrl.on_timer_click()")
+            paper-fab.blue(id= "home_page" icon="icons:home" title="home" ng-click="ctrl.on_home_click()")
           div.botton
-            paper-fab(icon="icons:trending-up" title="chart" ng-click="ctrl.on_chart_click()")
+            paper-fab.blue(id= "plot_page" icon="icons:trending-up" title="chart" ng-click="ctrl.on_chart_click()")
           div.botton
-            paper-fab(icon="favorite" title="heart")
+            paper-fab.blue(id= "power_page" icon="icons:power-settings-new" title="power" ng-click="ctrl.on_power_click()")
 

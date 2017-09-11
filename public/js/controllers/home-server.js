@@ -72,7 +72,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.enable_time = false;
     vm.switch_on = false;
     vm.timers = '';
-    vm.pages = {'MainPage':0,'TimerPage':1,'PlotPage':2};
+    vm.pages = {'mainPage':0,'plotPage':1,'powerPage':2};
 
     vm.range  = function(start, end, step = 1, offset = 0) {
         return Array.apply(null, Array((Math.abs(end - start) + ((offset||0)*2))/(step||1)+1)) .map(function(_, i)
@@ -212,22 +212,19 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     // };
 
-    vm.on_timer_click= function() {
+    vm.on_home_click= function() {
       var pages = document.querySelector('iron-pages');
-      if (pages.selected == vm.pages['MainPage']) {
-          pages.selected = vm.pages['TimerPage'];
-      } else {
-          pages.selected = vm.pages['MainPage'];
-      }      
+      pages.selected = vm.pages['mainPage'];    
     };
 
     vm.on_chart_click= function() {
       var pages = document.querySelector('iron-pages');
-      if (pages.selected == '0') {
-          pages.selected = "2";
-      } else {
-          pages.selected = "0";
-      }      
+      pages.selected = vm.pages['plotPage'];
+    };
+
+    vm.on_power_click= function() {
+      var pages = document.querySelector('iron-pages');
+      pages.selected = vm.pages['powerPage'];
     };
 
     // document.addEventListener('WebComponentsReady', function() {

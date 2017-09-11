@@ -86,6 +86,8 @@ def main():
         print '@@RESPONSE@@', get_plot(int(plotting)), '@@RESPONSE@@'
     if target_temp:
         send_target(target_temp)
+        print '@@RESPONSE@@', {"temperature": thermo_utility.get_temperatures(),
+                               "target": thermo_utility.send_get_target()}, '@@RESPONSE@@'
     if set_temp:
         # skip parameter validation
         send_set(set_temp)
