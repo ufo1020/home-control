@@ -227,6 +227,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
       pages.selected = vm.pages['powerPage'];
     };
 
+    vm.range=[1,2,3,4,5];
+
     // document.addEventListener('WebComponentsReady', function() {
     //   var target = document.querySelector('#target');
     //   target.addEventListener('value-change', function() {

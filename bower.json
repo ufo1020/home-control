@@ -13,7 +13,6 @@
     "paper-slider": "PolymerElements/paper-slider#^1.0.0",
     "paper-fab": "PolymerElements/paper-fab#^1.0.0",
     "paper-button": "PolymerElements/paper-button#^1.0.0",
-    "paper-time-picker": "git@github.com:bendavis78/paper-time-picker.git#^1.0.0",
     "paper-time-input": "git@github.com:ryanburns23/paper-time-input.git#^1.0.0",
     "iron-pages": "PolymerElements/iron-pages#^1.0.0",
     "polymer": "Polymer/polymer#^1.1.0"

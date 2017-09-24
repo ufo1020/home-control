@@ -18,8 +18,8 @@
 
 .center-container{
   position:absolute;
-  width:200px;
-  height:250px;
+  width:150px;
+  height:150px;
   margin: auto;
   top:0;left:0;right:0;bottom:0;
 }
@@ -44,6 +44,7 @@
 }
 
 .blur-background {
+  position:absolute;
   box-shadow: 0 0 10px .1px;
   width:150px;
   height:150px;
@@ -146,7 +147,7 @@
 
 .text-container{
   width:100px;
-  height:150px;
+  height:50px;
   position:absolute;
   text-align:center;
   margin: auto;
@@ -155,11 +156,11 @@
 
 .text{
     text-align: center;
-    font-family: sans-serif;
+    font-family: sans-serif-thin;
     font-size: 50px;
     padding-top:50px;
     text-shadow: 1px 1px 1px rgba(255, 255, 255, .1);
-    color:#222;
+    color:#eee;
 }
 
 .text::after {
