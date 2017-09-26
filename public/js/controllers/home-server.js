@@ -72,7 +72,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.enable_time = false;
     vm.switch_on = false;
     vm.timers = '';
-    vm.pages = {'mainPage':0,'plotPage':1,'powerPage':2};
+    vm.pages = {'mainPage':0,'powerPage':1, 'plotPage':2};
 
     vm.range  = function(start, end, step = 1, offset = 0) {
         return Array.apply(null, Array((Math.abs(end - start) + ((offset||0)*2))/(step||1)+1)) .map(function(_, i)
