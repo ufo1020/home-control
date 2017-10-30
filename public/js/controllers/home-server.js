@@ -21,7 +21,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             // rightAlignYAxis: true,
             x: function(d){ return d.x; },
             y: function(d){ return d.y; },
-            yDomain: [10, 25],
+            yDomain: [10, 30],
             useInteractiveGuideline: true,
             dispatch: {
                 stateChange: function(e){ console.log("stateChange"); },
