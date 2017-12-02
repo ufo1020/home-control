@@ -1,6 +1,7 @@
 #/etc/rc.d/rc.local
 
-echo "60" > /sys/class/gpio/export
+# removed since Debian 9.2
+#echo "60" > /sys/class/gpio/export
 echo "out" > /sys/class/gpio/gpio60/direction
 python /home/debian/home-control/python-scripts/thermo_monitor.py&
 python /home/debian/home-control/python-scripts/temperature_monitor.py&

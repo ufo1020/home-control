@@ -1,3 +1,4 @@
+Debian 8.7 setup instruction:
 OS setup:
 - Debian image "Debian 8.7 2017-03-19 4GB SD LXQT" from https://beagleboard.org/latest-images
 - run sudo /opt/scripts/tools/update_kernel.sh
@@ -28,3 +29,19 @@ from http://www.embeddedhobbyist.com/2016/05/beaglebone-black-gpio-permissions/
 		  lrwxrwxrwx  1 root gpio    0 May 16 21:09 gpio49 -> ../../devices/platform/ocp/4804c000.gpio/gpio/gpio49
 
 // bower install polymerelements/iron-image
+
+Debian 9.2 setup instruction:
+OS setup:
+	- Debian image "Debian 9.2 2017-10-10 4GB SD IoT" from https://beagleboard.org/latest-images
+	- Run Etcher flash to SD card
+	- Hold S2 button, start OS from SD card
+	- Change /boot/uEnv, enable flash to emmc
+	- Restart, LEDs should flash in knight pattern for 5 mins
+	- Load OS from emmc
+
+ADC and GPIO:
+	- NOTHING NEED TO DO!!! ADC and GPIO are all setup the way same to mannual setup in 8.7 above
+
+Initialise scripts:
+	- rc.loacl is removed
+	- TODO: systemd need to be setup
