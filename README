@@ -27,7 +27,7 @@ from http://www.embeddedhobbyist.com/2016/05/beaglebone-black-gpio-permissions/
 	  	drwxr-xr-x 55 root root    0 May 16 21:03 ..
 		  -rwxrwx---  1 root gpio 4096 May 16 21:09 export
 		  lrwxrwxrwx  1 root gpio    0 May 16 21:09 gpio49 -> ../../devices/platform/ocp/4804c000.gpio/gpio/gpio49
-
+- Add calling for init_beaglebone.sh into /etc/rc.local
 // bower install polymerelements/iron-image
 
 Debian 9.2 setup instruction:
@@ -43,5 +43,13 @@ ADC and GPIO:
 	- NOTHING NEED TO DO!!! ADC and GPIO are all setup the way same to mannual setup in 8.7 above
 
 Initialise scripts:
-	- rc.loacl is removed
-	- TODO: systemd need to be setup
+	- Copy tools/init_beaglebone.service into /etc/systemd/system (NOT symlink)
+	- Enable load service on start-up: sudo systemctl enable init_beaglebone.service
+	- Manually start the new service: sudo service init_beaglebone start
+Bashrc:
+	- ~/.bashrc is not working, to solve it:
+		- create ~/.bash_profile
+		- add the following in:
+			if [ -f ~/.bashrc ]; then
+	   			. ~/.bashrc;
+			fi

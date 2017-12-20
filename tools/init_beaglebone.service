@@ -1,0 +1,13 @@
+[Unit]
+Description=Temperture control service
+After=network.target
+
+[Service]
+Type=simple
+User=debian
+Group=debian
+ExecStart=/home/debian/home-control/tools/init_beaglebone.sh
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
