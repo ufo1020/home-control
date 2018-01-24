@@ -4,8 +4,6 @@ import os.path
 import datetime
 import thermo_utility
 
-SETTING_FILE_PATH = "/root/Code/thermo_control/python-scripts/settings.cfg"
-
 def parse_date(date_string):
     return datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
 
@@ -21,14 +19,14 @@ def send_del(message):
     reponse = thermo_utility.send("--delete:" + message)
     # print reponse
 
-def get_plot(required_lines):
+def get_plot_from_log(number_of_records):
     if not os.path.exists(thermo_utility.TEMPERATURE_LOG_FILE_PATH):
-        return False
+        return None
     f = open(thermo_utility.TEMPERATURE_LOG_FILE_PATH, 'r')
     lines = f.readlines()
     start_line = 0
-    if len(lines) > required_lines:
-        start_line = len(lines) - required_lines
+    if len(lines) > number_of_records:
+        start_line = len(lines) - number_of_records
     line_number = 0
     items = []
     for line in lines:
@@ -51,7 +49,24 @@ def get_plot(required_lines):
         except:
             continue
     f.close()
-    return  items
+    return items
+
+def get_plot_from_db(number_of_records):
+    db = thermo_utility.connect_db()
+    records = db.get_last_number_of_records(number_of_records)
+    items = []
+    for record in records:
+        items.append(record)
+    return items
+
+def get_plot(number_of_records):
+    # get records from DB if possible
+    records = None
+    if thermo_utility.TEMPERATURE_RECORDS_FROM_DB:
+        records = get_plot_from_db(number_of_records)
+    elif thermo_utility.TEMPERATURE_RECORDS_FROM_LOG:
+        records = get_plot_from_log(number_of_records)
+    return records
 
 def send_get_timers():
     reponse = thermo_utility.send("--gettimers")

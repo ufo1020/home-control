@@ -1,6 +1,8 @@
 import os.path
 import zmq
 import time
+import DBManager
+import json
 
 # Temperature senor:TI TMP36
 TMP_SENSOR_INPUT_PIN = 'P9_40'
@@ -12,6 +14,11 @@ GPIO_FILE_PATH  = "/sys/class/gpio/gpio60/value"
 TEMPERATURE_LOG_FILE_PATH = "/home/debian/home-control/python-scripts/temperature.log"
 LOCAL_PORT = "9001"
 LOCAL_ADDRESS = "tcp://127.0.0.1" + ":" + LOCAL_PORT
+
+DB_CONFIGURATION_PATH = "/home/debian/home-control/db_config.json"
+
+TEMPERATURE_RECORDS_FROM_LOG = True
+TEMPERATURE_RECORDS_FROM_DB = True
 
 def send(message):
     context = zmq.Context()
@@ -70,3 +77,8 @@ def set_switch(value):
     f = open(GPIO_FILE_PATH, 'w')
     f.write(value)
     f.close()
+
+def connect_db():
+    f = open(DB_CONFIGURATION_PATH, 'r')
+    json_obj = json.load(f)
+    return DBManager(json_obj)
