@@ -239,8 +239,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.turn_on = function() {
         // turn on default 18
-		var target = document.querySelector('#target');
-		console.log('going to ', target.value);
+        var target = document.querySelector('#target');
+        console.log('going to ', target.value);
         vm.set_temperatures(target.value);
     };
 
@@ -321,15 +321,21 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.extract_report = function(response) {
-        // data: [{'timestamp': '22:6', 'target': '0', 'temp': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temp': '19.9\n'}] 
+        // data: [{'timestamp': '22:6', 'target': '0', 'temperature': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temperature': '19.9\n'}] 
         if (response !== undefined) {
             vm.report_data = [{values:[], key:'Current', color:'#0000ff'},{values:[], key:'Target', color:'#ff0000', area: true}];
             var current = [];
             var target = [];
             for (i = 0; i < response.length; i++) {
                 var time = new Date(response[i].timestamp);
-                current.push({x:time, y:parseFloat(response[i].temp)});
-                target.push({x:time, y:parseFloat(response[i].target)});
+                if (typeof response[i].temperature === "string") {
+                    response[i].temperature = parseFloat(response[i].temperature);
+                }
+                if (typeof response[i].target === "string") {
+                    response[i].target = parseFloat(response[i].target);
+                }
+                current.push({x:time, y:response[i].temperature});
+                target.push({x:time, y:response[i].target});
             }
             vm.report_data[0].values = current;
             vm.report_data[1].values = target;
@@ -386,7 +392,12 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                     vm.disable_polling = true;
                 }
                 else {
-                    return JSON.parse(parts[1]);
+                    // in case of plot, response from mlab is:
+                    // {u"timestamp": "2018-02-10", u"_id": ObjectId("5a7ff6e27456410cc8de3d05"), u"temperature": 24.2, "target": 0}
+                    // in case unicode prefix 'u'
+                    var processed_data = parts[1].replace(/u"/g, '"');
+                    processed_data = processed_data.replace(/ObjectId\("(\w+)"\)/g, '"$1"');
+                    return JSON.parse(processed_data);
                 }
             }
         }

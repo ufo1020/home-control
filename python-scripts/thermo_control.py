@@ -43,7 +43,7 @@ def get_plot_from_log(number_of_records):
             target = line[2].rstrip()
             item["timestamp"] = date.isoformat()
             # item["timestamp"] = str(date.hour) + ":" + str(date.minute)
-            item["temp"] = t
+            item["temperature"] = t
             item["target"] = target
             items.append(item)
         except:

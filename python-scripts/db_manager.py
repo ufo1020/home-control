@@ -13,7 +13,7 @@ class DBManager():
     def connect(self):
         self.client = pymongo.MongoClient('mongodb://{}:{}@{}'.format(self.config['user'], self.config['password'], self.config['address']))
         self.database = self.client.home
-        self.collection = self.database['COLLECTION_NAME']
+        self.collection = self.database[DBManager.COLLECTION_NAME]
 
     def insert_one(self, item):
         self.collection.insert_one(item)

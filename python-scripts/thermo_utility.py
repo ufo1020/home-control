@@ -1,8 +1,8 @@
 import os.path
 import zmq
 import time
-import DBManager
 import json
+from db_manager import DBManager
 
 # Temperature senor:TI TMP36
 TMP_SENSOR_INPUT_PIN = 'P9_40'
