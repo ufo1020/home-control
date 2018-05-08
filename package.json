@@ -4,7 +4,6 @@
   "dependencies": {
     "socket.io": "*",
     "python-shell": "*",
-    "jade": "*",
     "express": "*"
   }
 }

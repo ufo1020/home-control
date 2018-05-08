@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html ng-app="HomeControl"></html>
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Home</title>
+   <script>Polymer = {lazyRegister: true,
+      useNativeCSSProperties: true};
+   </script><script src="components/webcomponentsjs/webcomponents-lite.js"></script><script src="components/angular/angular.js"></script><script src="components/socket.io-client/dist/socket.io.js"></script><script src="js/controllers/home-server.js"></script>
+   <link rel="import" href="components/iron-image/iron-image.html">
+   <link rel="import" href="components/paper-slider/paper-slider.html">
+   <link rel="import" href="components/iron-icons/iron-icons.html">
+   <link rel="import" href="components/paper-fab/paper-fab.html">
+   <link rel="import" href="components/paper-button/paper-button.html">
+   <link rel="import" href="components/paper-time-input/paper-time-input.html">
+   <link rel="import" href="components/iron-pages/iron-pages.html">
+   <link rel="stylesheet" href="css/core.css">
+   <link rel="stylesheet" type="text/css" href="components/nvd3/build/nv.d3.css">
+   <script src="components/d3/d3.js"></script><script src="components/nvd3/build/nv.d3.js"></script><script src="components/angular-nvd3/dist/angular-nvd3.js"></script>
+</head>
+<body ng-controller="mainController as ctrl">
+   <section class="section">
+      <iron-pages selected="0" id="pages-ontap">
+         <div name="main-page" class="image-background">
+            <div class="blur-background"></div>
+            <div class="center-container">
+               <div class="text-container"><span class="text">{{ctrl.current_temp}}</span></div>
+            </div>
+         </div>
+         <div name="power-page" class="image-background">
+            <div class="blur-background-time"></div>
+            <div class="center-container-time">
+               <paper-slider id="target" min="8" max="30" value="18" pin editable class="time-slider red"></paper-slider>
+                <input type="time" id="exampleInput" name="input" ng-model="example.value"
+       placeholder="HH:mm:ss" min="08:00:00" max="17:00:00" required />
+               <!--<paper-time-input id="time_input" format="24" class="time-input"></paper-time-input>-->
+               <paper-button raised ng-click="ctrl.add_timer()" class="time-button">Add timer</paper-button>
+               <paper-button raised ng-click="ctrl.turn_on()" class="main-button-button red">Heater ON </paper-button>
+               <span>{{ctrl.timers}}</span>
+            </div>
+         </div>
+         <div name="plot-page" class="image-background">
+            <div class="blur-background-plot"></div>
+            <div class="center-container-plot">
+               <nvd3 options="ctrl.nvd3_options" data="ctrl.report_data" api="ctrl.nvd3_api"></nvd3>
+            </div>
+         </div>
+      </iron-pages>
+      <div class="bottom-menu">
+         <div class="bottom-menu-container">
+            <div class="botton">
+               <paper-fab id="home_page" icon="icons:home" title="home" ng-click="ctrl.on_home_click()" class="blue"></paper-fab>
+            </div>
+            <div class="botton">
+               <paper-fab id="power_page" icon="icons:settings" title="power" ng-click="ctrl.on_power_click()" class="blue"></paper-fab>
+            </div>
+            <div class="botton">
+               <paper-fab id="plot_page" icon="icons:trending-up" title="chart" ng-click="ctrl.on_chart_click()" class="blue"></paper-fab>
+            </div>
+         </div>
+      </div>
+   </section>
+</body>
