@@ -8,7 +8,7 @@
 
 .image-background {
     position: absolute;
-    background: #eee url(imgs/sunset.jpeg);
+    background: #eee url(imgs/background.jpg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -18,7 +18,7 @@
 
 .center-container{
   position:absolute;
-  width:150px;
+  width:170;
   height:150px;
   margin: auto;
   top:0;left:0;right:0;bottom:0;
@@ -46,22 +46,22 @@
 .blur-background {
   position:absolute;
   box-shadow: 0 0 10px .1px;
-  width:150px;
-  height:150px;
+  width:200px;
+  height:200px;
   margin:auto;
   top:0;left:0;right:0;bottom:0;
-  background-color:#eee;
+  background-color:#607d8b;
   border-radius: 50%;
   overflow:hidden;
 }
 
 .blur-background::after {
   content: "";
-  height:150px;
-  width:150px;
+  height:200px;
+  width:200px;
   opacity:.8;
-  filter: blur(5px);
-  background: url(imgs/sunset.jpeg);
+  filter: blur(2px);
+  background: url(imgs/background.jpg);
   background-position: center;
   background-repeat: no-repeat;
   display: block;    
@@ -85,7 +85,7 @@
   height:300px;
   opacity:.8;
   filter: blur(5px);
-  background: url(imgs/sunset.jpeg);
+  background: url(imgs/background.jpg);
   background-position: center;
   background-repeat: no-repeat;
   display: block;    
@@ -132,7 +132,7 @@
   height:100%;
   opacity:.5;
   filter: blur(5px);
-  background: url(imgs/sunset.jpeg);
+  background: url(imgs/background.jpg);
   background-position: center;
   background-repeat: repeat;
   display: block;    
@@ -145,8 +145,8 @@
 }
 
 .text-container{
-  width:100px;
-  height:50px;
+  width:170px;
+  height:80px;
   position:absolute;
   text-align:center;
   margin: auto;
@@ -156,10 +156,10 @@
 .text{
     text-align: center;
     font-family: sans-serif-thin;
-    font-size: 50px;
+    font-size: 80px;
     padding-top:50px;
     text-shadow: 1px 1px 1px rgba(255, 255, 255, .1);
-    color:#eee;
+    color:#fff;
 }
 
 .text::after {
@@ -212,21 +212,24 @@ paper-fab.blue {
 .bottom-menu{
     width: 100%;
     height: 10%;
+    min-height: 80px;
     position: absolute;
     bottom: 0px;
     background-color:#607d8b;
 }
 
 .bottom-menu-container{
-    width: 350px;
-    min-width: 320px;
+    width: 30%;
+    min-width: 300px;
+    height:100%;
     position:relative;
     margin: auto;
     padding-top:10px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .botton{
     display: inline-block;
-    margin-left: 50px;
 }
 
