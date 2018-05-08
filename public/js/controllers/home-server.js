@@ -1,5 +1,5 @@
 var support_panel = angular.module('HomeControl', ['nvd3']);
-var host_address = "110.174.176.66";
+var host_address = "192.168.1.142:5000";
 var socket = io.connect('http://'+host_address);
 
 support_panel.controller('mainController', function($interval, $scope, $http) {
@@ -8,7 +8,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.nvd3_options = {
         chart: {
             type: 'lineChart',
-            width: window.innerWidth,
+            width: window.innerWidth * 0.95,
             height: window.innerHeight * 0.8,
             margin : {
                 top: 20,
@@ -259,7 +259,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.add_timer = function() {
         // Add target temperature and time
-        var time_target = document.querySelector('#time_target').value;
+        var time_target = document.querySelector('#target').value;
         var time_input = document.querySelector('#time_input').value;
         // time input format: 04:20
         time_input = time_input.split(":");
@@ -288,6 +288,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (response !== undefined) {
             vm.current_temp = response.temperature;
             vm.target_temp = response.target;
+            document.title = vm.current_temp + "°C - Home"
         }
     };
 
