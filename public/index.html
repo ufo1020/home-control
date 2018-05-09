@@ -20,7 +20,13 @@
 </head>
 <body ng-controller="mainController as ctrl">
    <section class="section">
-      <iron-pages selected="0" id="pages-ontap">
+      <div id="loading-page"  style="visibility: hidden" >
+         <div class="image-background">
+            <div class="blur-background-loader"></div>
+            <div class="loader"></div>
+         </div>
+      </div>
+      <iron-pages selected="0" id="pages-ontap"  style="visibility: visible">
          <div name="main-page" class="image-background">
             <div class="blur-background"></div>
             <div class="center-container">
@@ -31,8 +37,7 @@
             <div class="blur-background-time"></div>
             <div class="center-container-time">
                <paper-slider id="target" min="8" max="30" value="18" pin editable class="time-slider red"></paper-slider>
-                <input type="time" id="exampleInput" name="input" ng-model="example.value"
-       placeholder="HH:mm:ss" min="08:00:00" max="17:00:00" required />
+                <input type="time" id="time_input" name="input" placeholder="HH:mm:ss" class="time-input" />
                <!--<paper-time-input id="time_input" format="24" class="time-input"></paper-time-input>-->
                <paper-button raised ng-click="ctrl.add_timer()" class="time-button">Add timer</paper-button>
                <paper-button raised ng-click="ctrl.turn_on()" class="main-button-button red">Heater ON </paper-button>
