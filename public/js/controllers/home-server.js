@@ -9,7 +9,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         chart: {
             type: 'lineChart',
             width: window.innerWidth * 0.95,
-            height: window.innerHeight * 0.8,
+            height: window.innerHeight * 0.70,
             margin : {
                 top: 20,
                 right: 20,
