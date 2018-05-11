@@ -2,11 +2,19 @@
 <html ng-app="HomeControl"></html>
 <head>
    <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
    <title>Home</title>
    <script>Polymer = {lazyRegister: true,
       useNativeCSSProperties: true};
    </script><script src="components/webcomponentsjs/webcomponents-lite.js"></script><script src="components/angular/angular.js"></script><script src="components/socket.io-client/dist/socket.io.js"></script><script src="js/controllers/home-server.js"></script>
+
+   <!-- Bootstrap CSS -->
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+
+   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
    <link rel="import" href="components/iron-image/iron-image.html">
    <link rel="import" href="components/paper-slider/paper-slider.html">
    <link rel="import" href="components/iron-icons/iron-icons.html">
@@ -19,14 +27,8 @@
    <script src="components/d3/d3.js"></script><script src="components/nvd3/build/nv.d3.js"></script><script src="components/angular-nvd3/dist/angular-nvd3.js"></script>
 </head>
 <body ng-controller="mainController as ctrl">
-   <section class="section">
-      <div id="loading-page"  style="visibility: hidden" >
-         <div class="image-background">
-            <div class="blur-background-loader"></div>
-            <div class="loader"></div>
-         </div>
-      </div>
-      <iron-pages selected="0" id="pages-ontap"  style="visibility: visible">
+   <section class="section" >
+      <iron-pages selected="0" id="pages-ontap">
          <div name="main-page" class="image-background">
             <div class="blur-background"></div>
             <div class="center-container">
@@ -63,6 +65,23 @@
                <paper-fab id="plot_page" icon="icons:trending-up" title="chart" ng-click="ctrl.on_chart_click()" class="blue"></paper-fab>
             </div>
          </div>
+      </div>
+
+      <!-- Bootstrap loading dialog -->
+      <div class="container">
+        <div class="modal fade" id="loadingDialog" role="dialog">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                 <h5 class="modal-title">Loading</h5>
+              </div>
+              <div class="modal-body">
+                 <div class="loader"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
    </section>
 </body>

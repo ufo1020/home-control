@@ -4,3 +4,5 @@ public/libs/
 **/*.pyc
 **/*.jpeg
 **/*.log
+.idea/
+db_config.json

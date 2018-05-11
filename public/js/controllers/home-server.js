@@ -214,7 +214,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.on_home_click= function() {
       var pages = document.querySelector('iron-pages');
-      pages.selected = vm.pages['mainPage'];    
+      pages.selected = vm.pages['mainPage'];
     };
 
     vm.on_chart_click= function() {
@@ -412,8 +412,12 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         });
     };
 
+    vm.toggle_dialog = function(){
+        $('#loadingDialog').modal('toggle');
+    };
+
     vm.fetch_temperatures = function(){
-        //fetch temperatures immediately
+        // fetch temperatures immediately
         $http.get('http://'+host_address+'/fetch_temperatures').then(fetch_temperatures_successCallback, errorCallback);
     };
 
@@ -430,7 +434,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.fetch_plot = function(){
-        //fetch plot immediately
+        //fetch plot immediately, due to long response time, open loading dialog
+        vm.toggle_dialog();
         $http.get('http://'+host_address+'/fetch_plot').then(fetch_plot_successCallback, errorCallback);
     };
 
@@ -439,12 +444,14 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (response != undefined) {
             vm.extract_report(response);
         }
+        vm.toggle_dialog();
+
     };
 
     vm.fetch_temperatures();
     vm.fetch_plot();
-    $interval(vm.update_temperatures, 20000);
-    $interval(vm.update_timers, 20000);
+    $interval(vm.update_temperatures, 10000);
+    $interval(vm.update_timers, 10000);
     $interval(function() { vm.update_plot(1440); }, 60000);
 });
 
