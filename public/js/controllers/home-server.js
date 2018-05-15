@@ -237,11 +237,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     // });
 
 
-    vm.turn_on = function() {
+    vm.turn_on = function(value) {
         // turn on default 18
-        var target = document.querySelector('#target');
-        console.log('going to ', target.value);
-        vm.set_temperatures(target.value);
+        console.log('going to ', value);
+        vm.set_temperatures(value);
     };
 
     vm.turn_off = function() {
@@ -258,9 +257,11 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.add_timer = function() {
+        $('#timerDialog').modal('hide');
         // Add target temperature and time
-        var time_target = document.querySelector('#target').value;
-        var time_input = document.querySelector('#time_input').value;
+        var time_target = document.querySelector('#add_timer_target').value;
+        var time_input = document.querySelector('#add_timer_time').value;
+        var time_repeat = document.querySelector('#add_timer_repeat').value;
         // time input format: 04:20
         time_input = time_input.split(":");
         var time_h = time_input[0];
@@ -272,6 +273,10 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             console.log(run_result);
         });
+    };
+
+    vm.on_add_timer_click = function() {
+        $('#timerDialog').modal('show');
     };
 
     vm.update_temperatures = function() {
@@ -297,14 +302,37 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             // '...@@RESPONSE@@ [{'temp': 17, 'time': '04:20'}] @@RESPONSE@@...';
             var response = vm.get_response_string(vm.update_timers_response_text);
             if (response !== undefined) {
-                vm.timers = '';
+                vm.timers = [];
                 for (var i = 0; i < response.length; i++) {
-                   vm.timers += ' '+response[i].temp+'@'+response[i].time;
+                   vm.timers.push({temp:response[i].temp, time:response[i].time});
                }
+               vm.update_timer_list();
             }
             vm.update_timers_response_text = '';
         });
 
+    };
+
+    vm.update_timer_list = function() {
+        if (vm.timers.length > 0) {
+            var node = document.getElementById("list-timers");
+            // remove all children first
+            while (node.firstChild) {
+                node.removeChild(node.firstChild);
+            }
+            for (i = 0; i < vm.timers.length; i++) {
+                var a_element = document.createElement("a");
+                a_element.setAttribute("class", "list-group-item list-group-item-action");
+                a_element.setAttribute("id", "timer-"+i);
+                a_element.setAttribute("data-toggle", "list");
+//                a_element.setAttribute("href", "#list-home");
+                a_element.setAttribute("role", "tab");
+
+                var text = document.createTextNode(vm.timers[i].time + " at " + vm.timers[i].temp + "°C");
+                a_element.appendChild(text);
+                node.appendChild(a_element);
+            }
+        }
     };
 
     vm.update_plot = function(value) {
@@ -435,7 +463,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.fetch_plot = function(){
         //fetch plot immediately, due to long response time, open loading dialog
-        vm.toggle_dialog();
+        $('#loadingDialog').modal('show');
         $http.get('http://'+host_address+'/fetch_plot').then(fetch_plot_successCallback, errorCallback);
     };
 
@@ -444,12 +472,22 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (response != undefined) {
             vm.extract_report(response);
         }
-        vm.toggle_dialog();
+        $('#loadingDialog').modal('hide');
 
     };
 
-    vm.fetch_temperatures();
-    vm.fetch_plot();
+    vm.initialise = function() {
+        // add slider event listener
+        var target = document.querySelector('#target');
+        target.addEventListener('value-change', function() {
+          vm.turn_on(target.value);
+        });
+
+        vm.fetch_temperatures();
+        vm.fetch_plot();
+    };
+
+    vm.initialise()
     $interval(vm.update_temperatures, 10000);
     $interval(vm.update_timers, 10000);
     $interval(function() { vm.update_plot(1440); }, 60000);

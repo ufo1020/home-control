@@ -216,6 +216,12 @@ paper-fab.blue {
     background-color:#607d8b;
 }
 
+.bottom-right{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
 .bottom-menu-container{
     width: 30%;
     min-width: 300px;

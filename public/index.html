@@ -38,12 +38,18 @@
          <div name="power-page" class="image-background">
             <div class="blur-background-time"></div>
             <div class="center-container-time">
-               <paper-slider id="target" min="8" max="30" value="18" pin editable class="time-slider red"></paper-slider>
-                <input type="time" id="time_input" name="input" placeholder="HH:mm:ss" class="time-input" />
+               <div class="border border-light">
+                  <h6>Choose temperature</h6>
+                  <paper-slider id="target" min="8" max="30" value="18" pin editable class="time-slider red"></paper-slider>
+               </div>
+
                <!--<paper-time-input id="time_input" format="24" class="time-input"></paper-time-input>-->
-               <paper-button raised ng-click="ctrl.add_timer()" class="time-button">Add timer</paper-button>
-               <paper-button raised ng-click="ctrl.turn_on()" class="main-button-button red">Heater ON </paper-button>
-               <span>{{ctrl.timers}}</span>
+               <!--<paper-button raised ng-click="ctrl.add_timer()" class="time-button">Add timer</paper-button>-->
+               <!--<paper-button raised ng-click="ctrl.turn_on()" class="main-button-button red">Heater ON </paper-button>-->
+               <div id="list-timers" class="list-group list-group-flush" id="list-tab" role="tablist"></div>
+               <div class="bottom-right">
+                  <paper-fab icon="icons:alarm-add" title="home" ng-click="ctrl.on_add_timer_click()"></paper-fab>
+               </div>
             </div>
          </div>
          <div name="plot-page" class="image-background">
@@ -77,6 +83,41 @@
               </div>
               <div class="modal-body">
                  <div class="loader"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- Bootstrap add timer dialog -->
+      <div class="container">
+        <div class="modal fade" id="timerDialog" role="dialog">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Add timer</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                 <form>
+                   <div class="form-group">
+                     <label for="add_timer_time" class="col-form-label">Time:</label>
+                     <input type="time" id="add_timer_time" name="input" placeholder="HH:mm:ss" class="time-input" />
+                   </div>
+                   <div class="form-group">
+                     <label for="add_timer_target" class="col-form-label">Temperature:</label>
+                     <input type="number" id="add_timer_target" />
+                   </div>
+                  <div class="form-group">
+                     Repeat: <input type="checkbox" id="add_timer_repeat" />
+                   </div>
+                 </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" ng-click="ctrl.add_timer()">Save timer</button>
               </div>
             </div>
 
