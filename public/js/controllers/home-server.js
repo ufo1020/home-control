@@ -118,100 +118,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         vm.update_report_response_text += data;
     });
 
-    // vm.add_setting = function() {
-    //     var item = "";
-        
-    //     if (vm.target_temperature_text > 0) {
-    //         item += vm.target_temperature_text + "°C";
-    //         if (vm.enable_time) {
-    //             var t = "";
-    //             if (vm.time_h < 10) {
-    //                 t = '0' + vm.time_h;
-    //             } else {
-    //                 t = vm.time_m;
-    //             }
-    //             t += ":";                
-    //             if (vm.time_m < 10) {
-    //                 t += '0' + vm.time_m;
-    //             } else {
-    //                 t += vm.time_m;
-    //             }
-    //             item += "@" + t;
-
-    //         } else {
-    //             vm.target_temperature = vm.target_temperature_text;
-    //         }
-    //         vm.temperature_settings_text.push(item);
-    //         vm.remove_duplicate_settings();
-    //         vm.update_time_queue();
-    //     }
-    // };
-
-    // vm.update_time_queue = function() {
-    //     vm.time_queue = [];
-    //     for (var item in vm.temperature_settings_text) {
-    //         // @ means item has time setting
-    //         if (vm.is_key_exist(item, "@")) {
-    //             // 13C@03:02
-    //             var index_of_divider = itemitem.indexOf("@");
-    //             var index_of_time_divider = itemitem.indexOf(":");
-    //             var temperature = item.slice(0, index_of_divider - 1);
-    //             var time_h = item.slice(index_of_divider + 1, index_of_time_divider);
-    //             var time_m = item.slice(index_of_time_divider + 1);
-    //             var d = new Date();
-    //             d.setHours(time_h);
-    //             d.setMinutes(time_m);
-    //             vm.time_queue.push({"temperature":int(temperature), "time":d});
-    //         }
-    //     }
-    //     // sorting the queue
-    //     if (vm.time_queue.length > 1) {
-    //         vm.time_queue.sort(function(a, b) {
-    //             return a.time > b.time;
-    //         });
-    //     }        
-    // };
-                
-    // vm.remove_duplicate_settings = function() {
-    //     var new_list = [];
-    //     for (var i = 0; i < vm.temperature_settings_text.length; i++) {
-    //         // temperature only setting
-    //         if (vm.temperature_settings_text[i].indexOf("@") == -1) {
-    //             var to_remove = false;
-    //             for (var j = i+1; j < vm.temperature_settings_text.length; j++) {
-    //                 if (vm.temperature_settings_text[j].indexOf("@") == -1) {
-    //                     to_remove = true;
-    //                     break;
-    //                 }
-    //             }
-    //             if (!to_remove) {
-    //                 new_list.push(vm.temperature_settings_text[i]);
-    //             }
-    //         } else {
-    //             var t = vm.temperature_settings_text[i].slice(vm.temperature_settings_text[i].indexOf("@")+1)
-    //             var to_remove = false;
-    //             for (var j = i+1; j < vm.temperature_settings_text.length; j++) {
-    //                 if ( t === vm.temperature_settings_text[j].slice(vm.temperature_settings_text[j].indexOf("@")+1)) {
-    //                     to_remove = true;
-    //                     break;
-    //                 }
-    //             }
-    //             if (!to_remove) {
-    //                 new_list.push(vm.temperature_settings_text[i]);
-    //             }
-    //         }
-    //     }
-    //     return new_list;
-    // };
-
-    // vm.apply_switch_on = function() {        
-    //     var args = "--set:" + (vm.switch_on ? "1" : "0");
-    //     socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
-    //         console.log(run_result);
-    //     });
-
-    // };
-
     vm.on_home_click= function() {
       var pages = document.querySelector('iron-pages');
       pages.selected = vm.pages['mainPage'];
@@ -227,51 +133,44 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
       pages.selected = vm.pages['powerPage'];
     };
 
-    vm.range=[1,2,3,4,5];
-
-    // document.addEventListener('WebComponentsReady', function() {
-    //   var target = document.querySelector('#target');
-    //   target.addEventListener('value-change', function() {
-    //       vm.set_temperatures(target.value);
-    //   });
-    // });
-
-
-    vm.turn_on = function(value) {
-        // turn on default 18
-        console.log('going to ', value);
-        vm.set_temperatures(value);
-    };
-
-    vm.turn_off = function() {
-        // turn off default 20
-        vm.set_temperatures(8);
-    };
-
-    vm.set_temperatures = function(value) {
-        // Set target temperature
-        var args = "--target:" + value;
+    vm.on_delete_timer_click = function(time) {
+        var args = "--deltimer:" + time;
+        console.log(args);
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             console.log(run_result);
         });
     };
 
+    vm.range=[1,2,3,4,5];
+
+    vm.set_temperatures = function(value) {
+        // Set target temperature
+        var args = "--target:" + value;
+        console.log("going to");
+        socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
+            console.log(run_result);
+            // update display
+            vm.update_temperatures();
+        });
+    };
+
     vm.add_timer = function() {
         $('#timerDialog').modal('hide');
-        // Add target temperature and time
         var time_target = document.querySelector('#add_timer_target').value;
         var time_input = document.querySelector('#add_timer_time').value;
-        var time_repeat = document.querySelector('#add_timer_repeat').value;
+        var time_repeat = document.querySelector('#add_timer_repeat').value ? 1 : 0;
         // time input format: 04:20
         time_input = time_input.split(":");
         var time_h = time_input[0];
         var time_m = time_input[1];
         var args = ""
         if (time_h != undefined && time_m != undefined && time_target != undefined) {
-            args = "--set:" + time_target + "-" + time_h + "-" + time_m;
+            args = "--addtimer:" + time_target + "-" + time_h + "-" + time_m+"-"+time_repeat;
         }
+        console.log(args);
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             console.log(run_result);
+//            vm.update_timers();
         });
     };
 
@@ -282,7 +181,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.update_temperatures = function() {
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~--get', function(run_result) {
             vm.extract_temperatures(vm.update_temperatures_response_text);
-            // vm.check_settings();
             vm.update_temperatures_response_text = '';
         });
     };
@@ -299,7 +197,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.update_timers = function() {
         socket.emit('control-commands', 'runscript~timer-log~thermo_control~--gettimers', function(run_result) {
-            // '...@@RESPONSE@@ [{'temp': 17, 'time': '04:20'}] @@RESPONSE@@...';
+            // '...@@RESPONSE@@ [{'temp': 17, 'time': '04:20', 'repeat':'0'}] @@RESPONSE@@...';
             var response = vm.get_response_string(vm.update_timers_response_text);
             if (response !== undefined) {
                 vm.timers = [];
@@ -321,15 +219,27 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 node.removeChild(node.firstChild);
             }
             for (i = 0; i < vm.timers.length; i++) {
+                // Add target temperature and time
                 var a_element = document.createElement("a");
-                a_element.setAttribute("class", "list-group-item list-group-item-action");
-                a_element.setAttribute("id", "timer-"+i);
+                a_element.setAttribute("class", "list-group-item list-group-item-action bg-light");
+                a_element.setAttribute("id", "timer-"+vm.timers[i].time);
                 a_element.setAttribute("data-toggle", "list");
-//                a_element.setAttribute("href", "#list-home");
+                a_element.setAttribute("href", "#timerDialog");
                 a_element.setAttribute("role", "tab");
 
+                var span_element = document.createElement("span");
+                span_element.setAttribute("class", "text-info")
                 var text = document.createTextNode(vm.timers[i].time + " at " + vm.timers[i].temp + "°C");
-                a_element.appendChild(text);
+                span_element.appendChild(text);
+
+                var fab_element = document.createElement("paper-fab");
+                fab_element.setAttribute("class", "most-right bg-warning");
+                fab_element.setAttribute("icon", "icons:delete");
+                fab_element.setAttribute("mini", "true");
+                fab_element.setAttribute("ng-click", "ctrl.on_power_click("+vm.timers[i].time+")");
+
+                a_element.appendChild(span_element);
+                a_element.appendChild(fab_element);
                 node.appendChild(a_element);
             }
         }
@@ -350,13 +260,17 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.extract_report = function(response) {
-        // data: [{'timestamp': '22:6', 'target': '0', 'temperature': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temperature': '19.9\n'}] 
+        // data: [{'timestamp': '22:6', 'target': '0', 'temperature': '19.9'}, {'timestamp': '22:7', 'target': '0', 'temperature': '19.9\n'}]
         if (response !== undefined) {
             vm.report_data = [{values:[], key:'Current', color:'#0000ff'},{values:[], key:'Target', color:'#ff0000', area: true}];
             var current = [];
             var target = [];
             for (i = 0; i < response.length; i++) {
-                var time = new Date(response[i].timestamp);
+                // timestamp format: "2015-12-31 00:00:00". According to:
+                // https://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
+                // Date format need to be ISO-8601, the only change here is to replace space with T:
+                // "2015-12-31T00:00:00"
+                var time = new Date(response[i].timestamp.replace(' ', 'T'));
                 if (typeof response[i].temperature === "string") {
                     response[i].temperature = parseFloat(response[i].temperature);
                 }
@@ -379,26 +293,26 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         });
     };
 
-    vm.check_settings = function() {
-        // check if target temperature set
-        if (vm.target_temperature) {
-            if (vm.current_temp > vm.settle_temperature + vm.target_temperature) {
-                vm.switch_on = false;
-            } else if (vm.current_temp < vm.target_temperature - vm.settle_temperature) {
-                vm.switch_on = true;
-            }
-        }
-        var new_list = [];
-        for (var item in vm.time_queue) {
-            var d = new Date;
-            if (d.now() > item.time) {
-                vm.target_temperature = item.temperature;
-            } else {
-                new_list.push(item);
-            }
-        }
-        vm.time_queue = new_list;
-    };
+//    vm.check_settings = function() {
+//        // check if target temperature set
+//        if (vm.target_temperature) {
+//            if (vm.current_temp > vm.settle_temperature + vm.target_temperature) {
+//                vm.switch_on = false;
+//            } else if (vm.current_temp < vm.target_temperature - vm.settle_temperature) {
+//                vm.switch_on = true;
+//            }
+//        }
+//        var new_list = [];
+//        for (var item in vm.time_queue) {
+//            var d = new Date;
+//            if (d.now() > item.time) {
+//                vm.target_temperature = item.temperature;
+//            } else {
+//                new_list.push(item);
+//            }
+//        }
+//        vm.time_queue = new_list;
+//    };
 
     // vm.is_key_exist = function(str, key) {
     //     if (str.indexOf(key) == -1) {
@@ -440,8 +354,12 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         });
     };
 
-    vm.toggle_dialog = function(){
-        $('#loadingDialog').modal('toggle');
+    vm.show_loading_dialog = function(){
+        $('#loadingDialog').modal('show');
+    };
+
+    vm.close_loading_dialog = function(){
+        $('#loadingDialog').modal('hide');
     };
 
     vm.fetch_temperatures = function(){
@@ -463,7 +381,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.fetch_plot = function(){
         //fetch plot immediately, due to long response time, open loading dialog
-        $('#loadingDialog').modal('show');
+        vm.show_loading_dialog();
         $http.get('http://'+host_address+'/fetch_plot').then(fetch_plot_successCallback, errorCallback);
     };
 
@@ -472,15 +390,14 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (response != undefined) {
             vm.extract_report(response);
         }
-        $('#loadingDialog').modal('hide');
-
+        vm.close_loading_dialog();
     };
 
     vm.initialise = function() {
         // add slider event listener
         var target = document.querySelector('#target');
         target.addEventListener('value-change', function() {
-          vm.turn_on(target.value);
+          vm.set_temperatures(target.value);
         });
 
         vm.fetch_temperatures();
@@ -488,8 +405,9 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.initialise()
+    vm.update_timers()
     $interval(vm.update_temperatures, 10000);
-    $interval(vm.update_timers, 10000);
+//    $interval(vm.update_timers, 10000);
     $interval(function() { vm.update_plot(1440); }, 60000);
 });
 
