@@ -11,6 +11,9 @@ g_target_temperature_list = []
 
 SETTLING_BUFFER_UP_C = 1.0
 SETTLING_BUFFER_DOWN_C = 0.5
+# IMPORTANT: maximum timeout is 1 minute.
+# It's designed to compare timers up to a minute resolution. If sleep time is more than a minute, it will miss timers.
+# Check in control_thread.Monitor()
 MONITOR_TIMEOUT_S = 60
 ON = "1"
 OFF = "0"
@@ -29,6 +32,7 @@ class comms_thread(threading.Thread):
         self.sock = self.context.socket(zmq.REP)
         self.sock.bind(thermo_utility.LOCAL_ADDRESS)
 
+
     def listening(self):
         while True:
             message = self.sock.recv()
@@ -46,8 +50,8 @@ class comms_thread(threading.Thread):
 
     def handle_message(self, message):
         # input format: 
-        # --set:20-07-00
-        # --delete:2-3-4 
+        # --addtimer:20-07-00-0
+        # --deltimer:18-44
         # --target:14 
         # --get : get target temperature
         contents = message.split(":")
@@ -56,50 +60,49 @@ class comms_thread(threading.Thread):
         command = contents[0]
 
         global g_target_temperature
-        global g_target_temperature_list;
+        global g_target_temperature_list
 
         if command == "--target":
             temperature = int(contents[1])
             if self.is_temperature_valid(temperature):
                 if temperature != g_target_temperature:
                     g_target_temperature = temperature
-        elif command == "--set":
+        elif command == "--addtimer":
             args = contents[1].split("-")
-            if len(args) is not 3:
+            if len(args) is not 4:
                 return
             temperature = int(args[0])
             time_h = int(args[1])
             time_m = int(args[2])
+            repeat = int(args[3])
             if not self.is_temperature_valid(temperature):
                 return
             if not self.is_time_valid(time_h, time_m):
                 return
-
             next_timer = datetime.time(time_h, time_m)
-            now = datetime.datetime.now()
-            now_time = now.time()
-
-            # always looking for future time, for example, now is 22:00, next is 07:00
-            # now > next
-            if now_time > next_timer:
-                tmw = datetime.date.today() + datetime.timedelta(days=1)
-                next_timer = datetime.datetime(tmw.year, tmw.month, tmw.day, time_h, time_m)
-            else:
-                next_timer = datetime.datetime(now.year, now.month, now.day, time_h, time_m)
-            # g_next_timer_countdown = (next_timer - now).seconds / MONITOR_TIMEOUT_S
-            g_target_temperature_list.append({'time':next_timer, 'temp':temperature})
-        elif command == "--delete":
+            # make sure there is not duplication
+            duplicate = False
+            for item in g_target_temperature_list:
+                if item['time'] == next_timer:
+                    duplicate = True
+            if not duplicate:
+                g_target_temperature_list.append({'time':next_timer, 'temp':temperature, 'repeat':repeat})
+        elif command == "--deltimer":
             args = contents[1].split("-")
-            if len(args) is not 3:
+            if len(args) is not 2:
                 return
+            time_h = int(args[0])
+            time_m = int(args[1])
+            for timer in g_target_temperature_list:
+                if timer['time'].minute == time_m and timer['time'].hour == time_h:
+                    g_target_temperature_list.remove(timer)
         elif command == "--get":
             return g_target_temperature
         elif command == "--gettimers":
             timers = []
             for item in g_target_temperature_list:
-                timers.append({'time':item['time'].strftime("%H:%M"), 'temp':item['temp']})
+                timers.append({'time':item['time'].strftime("%H:%M"), 'temp':item['temp'], 'repeat': item['repeat']})
             return timers
-        print "set target:" + str(g_target_temperature)
 
     def run(self):
         self.listening()
@@ -116,21 +119,16 @@ class control_thread(threading.Thread):
         global g_target_temperature
         global g_target_temperature_list
 
-        if len(g_target_temperature_list) > 0:
-            next_timer = g_target_temperature_list[0]['time']
-            if datetime.datetime.now() > next_timer:
-                g_target_temperature = g_target_temperature_list[0]['temp']
-                g_target_temperature_list.pop(0)
-                print "triggered, new target is: " + str(g_target_temperature)
-        # print g_target_temperature_list
-        # if g_next_timer_valid:
-        #     print "g_next_timer_countdown: " + str(g_next_timer_countdown)
-        #     if g_next_timer_countdown > 0:
-        #         g_next_timer_countdown -= 1
-        #     elif g_next_timer_countdown == 0:
-        #         g_target_temperature = g_next_temperature
-        #         print "triggered, new target is: " + str(g_target_temperature)
-        #         g_next_timer_valid = False
+        now = datetime.datetime.now()
+        for timer in g_target_temperature_list:
+            # print "now {}, {}, timer {}, {}, {}".format(now.hour, now.minute, timer['time'].hour, timer['time'].minute, timer['repeat'])
+            if timer['time'].minute == now.minute and timer['time'].hour == now.hour:
+                # A timer matches with current time, set temperature
+                g_target_temperature = timer['temp']
+                # print "triggered, new target is: " + str(g_target_temperature)
+                if not timer['repeat']:
+                    g_target_temperature_list.remove(timer)
+                break
 
         current_temperature = float(thermo_utility.get_filtered_temperature())
         if current_temperature + SETTLING_BUFFER_DOWN_C < g_target_temperature:

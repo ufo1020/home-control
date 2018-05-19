@@ -11,12 +11,12 @@ def send_target(message):
     reponse = thermo_utility.send("--target:" + message)
     # print reponse
 
-def send_set(message):
-    reponse = thermo_utility.send("--set:" + message)
+def send_add_timer(message):
+    reponse = thermo_utility.send("--addtimer:" + message)
     # print reponse
 
-def send_del(message):
-    reponse = thermo_utility.send("--delete:" + message)
+def send_del_timer(message):
+    reponse = thermo_utility.send("--deltimer:" + message)
     # print reponse
 
 def get_plot_from_log(number_of_records):
@@ -83,17 +83,18 @@ def main():
     argParser.add_argument('--get', dest="get", action="store_true", help="Get current temperature")
     argParser.add_argument('--plot', dest="plot", action="store", help="Get plot")
     argParser.add_argument('--gettimers', dest="timers", action="store_true", help="Get timers")
-    argParser.add_argument('--set', dest="set", action="store", help="Set temperature with time")
+    argParser.add_argument('--addtimer', dest="addtimer", action="store", help="Add a timer")
+    argParser.add_argument('--deltimer', dest="deltimer", action="store", help="Remove a timer")
     argParser.add_argument('--target', dest="target", action="store", help="Set temperature")
     argParser.add_argument('--delete', help="Delete temperature")
 
     args = argParser.parse_args()
     get_temp = args.get
     plotting = args.plot
-    set_temp = args.set
     target_temp = args.target
-    del_temp = args.delete
     get_timers = args.timers
+    addtimer = args.addtimer
+    deltimer = args.deltimer
 
     if get_temp:
         print '@@RESPONSE@@', {"temperature" : thermo_utility.get_temperatures(), "target":thermo_utility.send_get_target()}, '@@RESPONSE@@'
@@ -103,11 +104,11 @@ def main():
         send_target(target_temp)
         print '@@RESPONSE@@', {"temperature": thermo_utility.get_temperatures(),
                                "target": thermo_utility.send_get_target()}, '@@RESPONSE@@'
-    if set_temp:
+    if addtimer:
         # skip parameter validation
-        send_set(set_temp)
-    if del_temp:
-        send_del(del_temp)
+        send_add_timer(addtimer)
+    if deltimer:
+        send_del_timer(deltimer)
     if get_timers:
         print '@@RESPONSE@@', send_get_timers(), '@@RESPONSE@@'
 

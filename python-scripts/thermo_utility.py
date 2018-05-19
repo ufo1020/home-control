@@ -17,7 +17,7 @@ LOCAL_ADDRESS = "tcp://127.0.0.1" + ":" + LOCAL_PORT
 
 DB_CONFIGURATION_PATH = "/home/debian/home-control/db_config.json"
 
-TEMPERATURE_RECORDS_FROM_LOG = True
+TEMPERATURE_RECORDS_FROM_LOG = False
 TEMPERATURE_RECORDS_FROM_DB = True
 
 def send(message):

@@ -26,7 +26,7 @@ def save_to_db(db_manager):
         db_manager.insert_one({'timestamp':str(datetime.datetime.now()), 'temperature':thermo_utility.get_filtered_temperature(),'target':thermo_utility.send_get_target()})
     except Exception as exception:
         f = open("/home/debian/home-control/python-scripts/error.log", "a")
-        f.write("Exception: {}\n".format(exception))
+        f.write("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
         f.close()
 
 def main():
