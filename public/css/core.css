@@ -222,6 +222,17 @@ paper-fab.blue {
     right: 0px;
 }
 
+.most-right{
+    position: absolute;
+    right: 10px;
+    bottom:5px;
+}
+
+.vertical-middle{
+    position: absolute;
+    top: 50%;
+}
+
 .bottom-menu-container{
     width: 30%;
     min-width: 300px;

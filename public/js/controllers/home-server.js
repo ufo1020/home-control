@@ -4,7 +4,7 @@ var socket = io.connect('http://'+host_address);
 
 support_panel.controller('mainController', function($interval, $scope, $http) {
     var vm = this;
-    vm.settle_temperature = 2 // 2 degrees for settling 
+    vm.settle_temperature = 2 // 2 degrees for settling
     vm.nvd3_options = {
         chart: {
             type: 'lineChart',
@@ -29,12 +29,12 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 tooltipShow: function(e){ console.log("tooltipShow"); },
                 tooltipHide: function(e){ console.log("tooltipHide"); }
             },
- 
+
             xAxis: {
                 axisLabel: 'Time',
                 tickFormat: function(d) {
                   //nvd3 date format: https://bl.ocks.org/zanarmstrong/ca0adb7e426c12c06a95
-                  return d3.time.format('%H:%M')(new Date(d)) 
+                  return d3.time.format('%H:%M')(new Date(d))
                }
             },
             yAxis: {
@@ -108,7 +108,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     socket.on('timer-log', function(data) {
         vm.update_timers_response_text += data;
-    });    
+    });
 
     socket.on('mode-log', function(data) {
         vm.mode_response_text += data;
@@ -134,7 +134,9 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.on_delete_timer_click = function(time) {
-        var args = "--deltimer:" + time;
+        // time format should be 07:00
+        // deltimer command input format is: 07-00
+        var args = "--deltimer:" + time.replace(':','-');
         console.log(args);
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             console.log(run_result);
@@ -202,7 +204,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             if (response !== undefined) {
                 vm.timers = [];
                 for (var i = 0; i < response.length; i++) {
-                   vm.timers.push({temp:response[i].temp, time:response[i].time});
+                   vm.timers.push({temp:response[i].temp, time:response[i].time, repeat:response[i].repeat});
                }
                vm.update_timer_list();
             }
@@ -222,21 +224,22 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 // Add target temperature and time
                 var a_element = document.createElement("a");
                 a_element.setAttribute("class", "list-group-item list-group-item-action bg-light");
-                a_element.setAttribute("id", "timer-"+vm.timers[i].time);
                 a_element.setAttribute("data-toggle", "list");
-                a_element.setAttribute("href", "#timerDialog");
                 a_element.setAttribute("role", "tab");
+//                a_element.setAttribute("data-toggle", "modal");
+//                a_element.setAttribute("href", "#timerDialog");
 
                 var span_element = document.createElement("span");
-                span_element.setAttribute("class", "text-info")
-                var text = document.createTextNode(vm.timers[i].time + " at " + vm.timers[i].temp + "°C");
+                span_element.setAttribute("class", "text-info");
+                var repeat = vm.timers[i].repeat ? '(R)':'';
+                var text = document.createTextNode(vm.timers[i].temp + "°C" + " at " + vm.timers[i].time + " " + repeat );
                 span_element.appendChild(text);
 
                 var fab_element = document.createElement("paper-fab");
                 fab_element.setAttribute("class", "most-right bg-warning");
                 fab_element.setAttribute("icon", "icons:delete");
                 fab_element.setAttribute("mini", "true");
-                fab_element.setAttribute("ng-click", "ctrl.on_power_click("+vm.timers[i].time+")");
+                fab_element.setAttribute("id", "timer-"+vm.timers[i].time);
 
                 a_element.appendChild(span_element);
                 a_element.appendChild(fab_element);
@@ -372,6 +375,9 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (response != undefined) {
             vm.current_temp = response.temperature;
             vm.target_temp = response.target;
+            var target = document.querySelector('#target');
+            target.value = vm.target_temp;
+
         }
     };
 
@@ -395,19 +401,34 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.initialise = function() {
         // add slider event listener
+
         var target = document.querySelector('#target');
+
         target.addEventListener('value-change', function() {
+          console.log(target.value);
           vm.set_temperatures(target.value);
         });
 
+        document.addEventListener('click',function(e){
+            if(e.target && e.target.dataHost) {
+                if (e.target.dataHost.id.includes('timer')){
+                    // timer-07:00
+                    var time = e.target.dataHost.id.substring(e.target.dataHost.id.indexOf('-')+1);
+                    // 07:00
+                    if (time.length == 5) {
+                        vm.on_delete_timer_click(time);
+                    }
+                }
+            }
+        })
+
         vm.fetch_temperatures();
         vm.fetch_plot();
+        vm.update_timers();
     };
 
     vm.initialise()
-    vm.update_timers()
     $interval(vm.update_temperatures, 10000);
-//    $interval(vm.update_timers, 10000);
+    $interval(vm.update_timers, 60000);
     $interval(function() { vm.update_plot(1440); }, 60000);
 });
-
