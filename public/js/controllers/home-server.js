@@ -80,22 +80,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     }
 
     socket.on('/', function(data) {
-        vm.log_text += '\r\n';
-        vm.log_text += data;
         $scope.$apply(function() { });
         // TODO: clear size of logs
-    });
-
-    socket.on('logs', function(data) {
-        vm.log_text += '\r\n';
-        vm.log_text += data;
-        vm.force_binding_update();
-    });
-
-    socket.on('full-logs', function(data) {
-        vm.log_text_full += '\r\n';
-        vm.log_text_full += data;
-        vm.force_binding_update();
     });
 
     vm.force_binding_update = function() {
@@ -136,28 +122,18 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.on_delete_timer_click = function(time) {
         // time format should be 07:00
         // deltimer command input format is: 07-00
+        vm.show_loading_dialog()
         var args = "--deltimer:" + time.replace(':','-');
-        console.log(args);
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
-            console.log(run_result);
+            vm.update_timers();
         });
     };
 
     vm.range=[1,2,3,4,5];
 
-    vm.set_temperatures = function(value) {
-        // Set target temperature
-        var args = "--target:" + value;
-        console.log("going to");
-        socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
-            console.log(run_result);
-            // update display
-            vm.update_temperatures();
-        });
-    };
-
     vm.add_timer = function() {
         $('#timerDialog').modal('hide');
+        vm.show_loading_dialog();
         var time_target = document.querySelector('#add_timer_target').value;
         var time_input = document.querySelector('#add_timer_time').value;
         var time_repeat = document.querySelector('#add_timer_repeat').value ? 1 : 0;
@@ -169,10 +145,8 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (time_h != undefined && time_m != undefined && time_target != undefined) {
             args = "--addtimer:" + time_target + "-" + time_h + "-" + time_m+"-"+time_repeat;
         }
-        console.log(args);
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
-            console.log(run_result);
-//            vm.update_timers();
+           vm.update_timers();
         });
     };
 
@@ -193,8 +167,11 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (response !== undefined) {
             vm.current_temp = response.temperature;
             vm.target_temp = response.target;
-            document.title = vm.current_temp + "°C - Home"
+            document.title = vm.current_temp + "°C - Home";
+            vm.force_binding_update();
         }
+        // from set_temperatures
+        vm.close_loading_dialog();
     };
 
     vm.update_timers = function() {
@@ -208,19 +185,21 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                }
                vm.update_timer_list();
             }
+            // from on_delete_timer_click()
+            vm.close_loading_dialog()
             vm.update_timers_response_text = '';
         });
 
     };
 
     vm.update_timer_list = function() {
+        var node = document.getElementById("list-timers");
+        // remove all children first
+        while (node.firstChild) {
+            node.removeChild(node.firstChild);
+        }
         if (vm.timers.length > 0) {
-            var node = document.getElementById("list-timers");
-            // remove all children first
-            while (node.firstChild) {
-                node.removeChild(node.firstChild);
-            }
-            for (i = 0; i < vm.timers.length; i++) {
+                for (i = 0; i < vm.timers.length; i++) {
                 // Add target temperature and time
                 var a_element = document.createElement("a");
                 a_element.setAttribute("class", "list-group-item list-group-item-action bg-light");
@@ -291,39 +270,12 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.set_temperatures = function(value) {
         // Set target temperature
         var args = "--target:" + value;
+        vm.show_loading_dialog()
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
-            //console.log(run_result);
+            // update display
+            vm.update_temperatures();
         });
     };
-
-//    vm.check_settings = function() {
-//        // check if target temperature set
-//        if (vm.target_temperature) {
-//            if (vm.current_temp > vm.settle_temperature + vm.target_temperature) {
-//                vm.switch_on = false;
-//            } else if (vm.current_temp < vm.target_temperature - vm.settle_temperature) {
-//                vm.switch_on = true;
-//            }
-//        }
-//        var new_list = [];
-//        for (var item in vm.time_queue) {
-//            var d = new Date;
-//            if (d.now() > item.time) {
-//                vm.target_temperature = item.temperature;
-//            } else {
-//                new_list.push(item);
-//            }
-//        }
-//        vm.time_queue = new_list;
-//    };
-
-    // vm.is_key_exist = function(str, key) {
-    //     if (str.indexOf(key) == -1) {
-    //         return false;
-    //     } else {
-    //         return true;
-    //     }
-    // };
 
     vm.get_response_string = function(data) {
         // data is in the format:

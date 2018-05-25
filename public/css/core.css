@@ -64,7 +64,7 @@
   background: url(imgs/background.jpg);
   background-position: center;
   background-repeat: no-repeat;
-  display: block;    
+  display: block;
 }
 
 .blur-background-time {
@@ -88,7 +88,7 @@
   background: url(imgs/background.jpg);
   background-position: center;
   background-repeat: no-repeat;
-  display: block;    
+  display: block;
 }
 
 .center-container-time{
@@ -134,7 +134,7 @@
   background: url(imgs/background.jpg);
   background-position: center;
   background-repeat: repeat;
-  display: block;    
+  display: block;
 }
 
 .center-container-plot{
@@ -170,7 +170,7 @@
   position:absolute;
   text-align:center;
   margin: auto;
-  top:0;left:0;right:0;bottom:0;    
+  top:0;left:0;right:0;bottom:0;
   padding-top: 50px;
 }
 
@@ -220,6 +220,11 @@ paper-fab.blue {
     position: absolute;
     bottom: 0px;
     right: 0px;
+}
+
+.bottom-up{
+  position: absolute;
+  bottom: 50px;
 }
 
 .most-right{
