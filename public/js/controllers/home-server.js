@@ -136,7 +136,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         vm.show_loading_dialog();
         var time_target = document.querySelector('#add_timer_target').value;
         var time_input = document.querySelector('#add_timer_time').value;
-        var time_repeat = document.querySelector('#add_timer_repeat').value ? 1 : 0;
+        var time_repeat = document.querySelector('#add_timer_repeat').checked ? 1 : 0;
         // time input format: 04:20
         time_input = time_input.split(":");
         var time_h = time_input[0];
@@ -145,6 +145,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (time_h != undefined && time_m != undefined && time_target != undefined) {
             args = "--addtimer:" + time_target + "-" + time_h + "-" + time_m+"-"+time_repeat;
         }
+        console.log(args)
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
            vm.update_timers();
         });
