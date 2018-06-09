@@ -310,12 +310,20 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         });
     };
 
+    // count how many dialog requests
+    vm.dialog_counter = 0;
     vm.show_loading_dialog = function(){
-        $('#loadingDialog').modal('show');
+        if (vm.dialog_counter == 0) {
+          $('#loadingDialog').modal('show');
+        }
+        vm.dialog_counter += 1;
     };
 
     vm.close_loading_dialog = function(){
-        $('#loadingDialog').modal('hide');
+        vm.dialog_counter -= 1;
+        if (vm.dialog_counter <= 0) {
+          $('#loadingDialog').modal('hide');
+        }
     };
 
     vm.fetch_temperatures = function(){
@@ -330,7 +338,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             vm.target_temp = response.target;
             var target = document.querySelector('#target');
             target.value = vm.target_temp;
-
         }
     };
 
