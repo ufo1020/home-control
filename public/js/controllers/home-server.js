@@ -321,7 +321,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
 
     vm.close_loading_dialog = function(){
         vm.dialog_counter -= 1;
-        if (vm.dialog_counter <= 0) {
+        if (vm.dialog_counter == 0) {
           $('#loadingDialog').modal('hide');
         }
     };
