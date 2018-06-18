@@ -3,6 +3,7 @@ import zmq
 import time
 import json
 import datetime
+import gevent
 from db_manager import DBManager
 
 # Temperature senor:TI TMP36
@@ -21,16 +22,21 @@ DB_CONFIGURATION_PATH = "/home/debian/home-control/db_config.json"
 TEMPERATURE_RECORDS_FROM_LOG = False
 TEMPERATURE_RECORDS_FROM_DB = True
 
-def send(message):
+TIMTOUT = 10 #seconds
+
+def send(message, recv = False, timeout=TIMTOUT):
     context = zmq.Context()
     sock = context.socket(zmq.REQ)
     sock.connect(LOCAL_ADDRESS)
     sock.send(message)
-    return sock.recv()
+    if recv:
+        response = None
+        with gevent.Timeout(timeout):
+            response = sock.recv()
+        return response
 
 def send_get_target():
-    reponse = send("--get")
-    return reponse
+    return send("--get", recv=True)
 
 def get_temperatures():
     if not os.path.exists(TMP_SENSOR_ADC_INPUT_PATH):
@@ -95,3 +101,8 @@ def get_next_datetime(timer):
     else:
         timer = datetime.datetime(now.year, now.month, now.day, timer.hour, timer.minute)
     return timer
+
+def write_to_error_log(line):
+    f = open("/home/debian/home-control/python-scripts/error.log", "a")
+    f.write(line)
+    f.close()

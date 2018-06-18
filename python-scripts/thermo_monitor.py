@@ -156,9 +156,7 @@ def main():
         while True:
             time.sleep(1)
     except Exception as exception:
-        f = open("/home/debian/home-control/python-scripts/error.log", "a")
-        f.write("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
-        f.close()
+        thermo_utility.write_to_error_log("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
 
 if __name__ == "__main__":
     sys.exit(main())
