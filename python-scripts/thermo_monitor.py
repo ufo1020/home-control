@@ -1,5 +1,4 @@
 import sys
-import os.path
 import datetime
 import time
 import zmq
@@ -11,9 +10,7 @@ g_target_temperature_list = []
 
 SETTLING_BUFFER_UP_C = 1.0
 SETTLING_BUFFER_DOWN_C = 0.5
-# IMPORTANT: maximum timeout is 1 minute.
-# It's designed to compare timers up to a minute resolution. If sleep time is more than a minute, it will miss timers.
-# Check in control_thread.Monitor()
+
 MONITOR_TIMEOUT_S = 60
 ON = "1"
 OFF = "0"
@@ -49,10 +46,10 @@ class comms_thread(threading.Thread):
         return 0 <= h <24 and 0<= m < 60
 
     def handle_message(self, message):
-        # input format: 
+        # input format:
         # --addtimer:20-07-00-0
         # --deltimer:18-44
-        # --target:14 
+        # --target:14
         # --get : get target temperature
         contents = message.split(":")
         if (len(contents) < 1):
@@ -83,10 +80,10 @@ class comms_thread(threading.Thread):
             # make sure there is not duplication
             duplicate = False
             for item in g_target_temperature_list:
-                if item['time'] == next_timer:
+                if item['time'].time() == next_timer:
                     duplicate = True
             if not duplicate:
-                g_target_temperature_list.append({'time':next_timer, 'temp':temperature, 'repeat':repeat})
+                g_target_temperature_list.append({'time':thermo_utility.get_next_datetime(next_timer), 'temp':temperature, 'repeat':repeat})
         elif command == "--deltimer":
             args = contents[1].split("-")
             if len(args) is not 2:
@@ -121,41 +118,47 @@ class control_thread(threading.Thread):
 
         now = datetime.datetime.now()
         for timer in g_target_temperature_list:
-            # print "now {}, {}, timer {}, {}, {}".format(now.hour, now.minute, timer['time'].hour, timer['time'].minute, timer['repeat'])
-            if timer['time'].minute == now.minute and timer['time'].hour == now.hour:
+            # print "now {}, timer {} {}".format(now, timer['time'], timer['repeat'])
+            if timer['time'] <= now:
+                # if timer['time'].minute == now.minute and timer['time'].hour == now.hour:
                 # A timer matches with current time, set temperature
                 g_target_temperature = timer['temp']
                 # print "triggered, new target is: " + str(g_target_temperature)
                 if not timer['repeat']:
                     g_target_temperature_list.remove(timer)
-                break
+                else:
+                    timer['time'] = thermo_utility.get_next_datetime(timer['time'].time())
+                # break
 
         current_temperature = float(thermo_utility.get_filtered_temperature())
         if current_temperature + SETTLING_BUFFER_DOWN_C < g_target_temperature:
-            if (self.heater_state != ON):
+            if self.heater_state != ON:
                 self.heater_state = ON
                 thermo_utility.set_switch(self.heater_state)
         elif current_temperature > g_target_temperature + SETTLING_BUFFER_UP_C:
-            if (self.heater_state != OFF):
+            if self.heater_state != OFF:
                 self.heater_state = OFF
                 thermo_utility.set_switch(self.heater_state)
         # print "heater: " + str(self.heater_state) + " temp:" + str(current_temperature) + " target:" + str(g_target_temperature)
 
     def run(self):
-        # print "Starting " + self.name
         while True:
             self.monitoring()
             time.sleep(MONITOR_TIMEOUT_S)
-        # print "Exiting " + self.name
 
 def main():
-    commsThread = comms_thread(1, "comms_thread")
-    controlThread = control_thread(2, "control_thread")
+    try:
+        commsThread = comms_thread(1, "comms_thread")
+        controlThread = control_thread(2, "control_thread")
 
-    commsThread.start()
-    controlThread.start()
-    while True:
-        time.sleep(1)
+        commsThread.start()
+        controlThread.start()
+        while True:
+            time.sleep(1)
+    except Exception as exception:
+        f = open("/home/debian/home-control/python-scripts/error.log", "a")
+        f.write("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
+        f.close()
 
 if __name__ == "__main__":
     sys.exit(main())

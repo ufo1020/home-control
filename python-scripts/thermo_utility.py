@@ -2,6 +2,7 @@ import os.path
 import zmq
 import time
 import json
+import datetime
 from db_manager import DBManager
 
 # Temperature senor:TI TMP36
@@ -47,7 +48,7 @@ def get_filtered_temperature():
     for i in range(num_of_samples):
         t = float(get_temperatures())
         samples.append(t)
-        time.sleep(0.5)
+        time.sleep(0.2)
     samples.sort()
     # remove min/max and average
     # print samples
@@ -82,3 +83,15 @@ def connect_db():
     f = open(DB_CONFIGURATION_PATH, 'r')
     json_obj = json.load(f)
     return DBManager(json_obj)
+
+# input: datetime.time
+def get_next_datetime(timer):
+    now = datetime.datetime.now()
+    # always looking for future time, for example, now is 22:00, next is 07:00
+    # now > next
+    if now.time() > timer:
+        tmw = datetime.date.today() + datetime.timedelta(days=1)
+        timer = datetime.datetime(tmw.year, tmw.month, tmw.day, timer.hour, timer.minute)
+    else:
+        timer = datetime.datetime(now.year, now.month, now.day, timer.hour, timer.minute)
+    return timer
