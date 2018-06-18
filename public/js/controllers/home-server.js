@@ -145,7 +145,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         if (time_h != undefined && time_m != undefined && time_target != undefined) {
             args = "--addtimer:" + time_target + "-" + time_h + "-" + time_m+"-"+time_repeat;
         }
-        console.log(args)
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
            vm.update_timers();
         });
@@ -231,7 +230,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.update_plot = function(value) {
         var args = "--plot:" + value;
         socket.emit('control-commands', 'runscript~report-log~thermo_control~'+args, function(run_result) {
-            // console.log(run_result);
             // '...@@RESPONSE@@ [{'timestamp': '22:15', 'target': '0', 'temp': '19.9'}] @@RESPONSE@@...';
             var response = vm.get_response_string(vm.update_report_response_text);
             if (response !== undefined) {
@@ -253,7 +251,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 // https://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
                 // Date format need to be ISO-8601, the only change here is to replace space with T:
                 // "2015-12-31T00:00:00"
-                var time = new Date(response[i].timestamp.replace(' ', 'T'));
+                var time = new Date(response[i].timestamp.replace(' ', 'T').concat(+1000));
                 if (typeof response[i].temperature === "string") {
                     response[i].temperature = parseFloat(response[i].temperature);
                 }
@@ -285,7 +283,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
             var quoted = data.replace(/'/g, '\"');
             var parts = quoted.split('@@RESPONSE@@');
             if (parts.length > 2) {
-                //console.log(parts[1]);
                 if (parts[1] === ' FAILED ') {
                     // stop polling when an error is detected during periodic scripts
                     vm.disable_polling = true;
@@ -320,9 +317,11 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     };
 
     vm.close_loading_dialog = function(){
-        vm.dialog_counter -= 1;
-        if (vm.dialog_counter == 0) {
+        if (vm.dialog_counter <= 0) {
           $('#loadingDialog').modal('hide');
+          vm.dialog_counter = 0;
+        } else {
+          vm.dialog_counter -= 1;
         }
     };
 
@@ -365,7 +364,6 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         var target = document.querySelector('#target');
 
         target.addEventListener('value-change', function() {
-          console.log(target.value);
           vm.set_temperatures(target.value);
         });
 

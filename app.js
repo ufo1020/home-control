@@ -10,14 +10,15 @@ app.use('/libs', express.static(__dirname + '/node_modules'));
 app.use('/components', express.static(__dirname + '/bower_components'));
 
 server.listen(port=5000, host='192.168.1.142');
-console.log('Server running on: localhost:5000');
+// console.log('Server running on: localhost:5000');
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
 });
 
 io.on('connection', function (client) {
-    console.log('connected');
+    var address = client.handshake.address;
+    // console.log('connect to', address);
 
     client.on('disconnect', function() {
         console.log('disconnected');
@@ -25,6 +26,7 @@ io.on('connection', function (client) {
 
     client.on('control-commands', function (data, callback) {
         fields = data.split('~');
+        // console.log(data, address);
         if (fields[0] == 'runscript') {
             var log_target = fields[1];
             var options = {
@@ -78,7 +80,7 @@ app.get('/fetch_temperatures', function(req, res) {
     var script_runner = new python_shell(script_name, options);
     script_runner.on('message', function(message) {
         res.send(message)
-    });    
+    });
 });
 
 app.get('/fetch_plot', function(req, res) {
@@ -93,5 +95,5 @@ app.get('/fetch_plot', function(req, res) {
     var script_runner = new python_shell(script_name, options);
     script_runner.on('message', function(message) {
         res.send(message)
-    });    
+    });
 });
