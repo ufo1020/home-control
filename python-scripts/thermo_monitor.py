@@ -4,6 +4,7 @@ import time
 import zmq
 import thermo_utility
 import threading
+from Board import Board
 
 g_target_temperature = 0
 g_target_temperature_list = []
@@ -18,25 +19,25 @@ MAX_SET_TEMPERATURE = 30
 MIN_SET_TEMPERATURE = 7
 
 class comms_thread(threading.Thread):
-    def __init__(self, thread_id, name):
+    def __init__(self, thread_id, name, board):
         threading.Thread.__init__(self)
-        self.daemon = True
-        self.thread_id = thread_id
-        self.name = name
+        self._daemon = True
+        self._thread_id = thread_id
+        self._name = name
         # ZMQ setup
-        self.context = zmq.Context()
+        self._context = zmq.Context()
         # Define the socket using the "Context"
-        self.sock = self.context.socket(zmq.REP)
-        self.sock.bind(thermo_utility.LOCAL_ADDRESS)
-
+        self._sock = self._context.socket(zmq.REP)
+        self._sock.bind(thermo_utility.LOCAL_ADDRESS)
+        self._board = board
 
     def listening(self):
         while True:
-            message = self.sock.recv()
+            message = self._sock.recv()
             result = self.handle_message(message)
             if result == None:
                 result = ""
-            self.sock.send(str(result))
+            self._sock.send(str(result))
             # print "Echo: " + str(result)
 
     def is_temperature_valid(self, temperature):
@@ -50,7 +51,8 @@ class comms_thread(threading.Thread):
         # --addtimer:20-07-00-0
         # --deltimer:18-44
         # --target:14
-        # --get : get target temperature
+        # --getTarget : get target temperature
+        # --getCurrent : get current temperature
         contents = message.split(":")
         if (len(contents) < 1):
             return
@@ -93,8 +95,10 @@ class comms_thread(threading.Thread):
             for timer in g_target_temperature_list:
                 if timer['time'].minute == time_m and timer['time'].hour == time_h:
                     g_target_temperature_list.remove(timer)
-        elif command == "--get":
+        elif command == "--getTarget":
             return g_target_temperature
+        elif command == "--getCurrent":
+            return self._board.get_catched_temperature()
         elif command == "--gettimers":
             timers = []
             for item in g_target_temperature_list:
@@ -105,12 +109,13 @@ class comms_thread(threading.Thread):
         self.listening()
 
 class control_thread(threading.Thread):
-    def __init__(self, thread_id, name):
+    def __init__(self, thread_id, name, board):
         threading.Thread.__init__(self)
-        self.daemon = True
-        self.thread_id = thread_id
-        self.name = name
-        self.heater_state = ON if thermo_utility.get_switch_state() else OFF
+        self._daemon = True
+        self._board = board
+        self._thread_id = thread_id
+        self._name = name
+        self._heater_state = ON if board.get_switch_state() else OFF
 
     def monitoring(self):
         global g_target_temperature
@@ -130,15 +135,15 @@ class control_thread(threading.Thread):
                     timer['time'] = thermo_utility.get_next_datetime(timer['time'].time())
                 # break
 
-        current_temperature = float(thermo_utility.get_filtered_temperature())
+        current_temperature = float(self._board.get_catched_temperature())
         if current_temperature + SETTLING_BUFFER_DOWN_C < g_target_temperature:
-            if self.heater_state != ON:
-                self.heater_state = ON
-                thermo_utility.set_switch(self.heater_state)
+            if self._heater_state != ON:
+                self._heater_state = ON
+                self._board.set_switch(self._heater_state)
         elif current_temperature > g_target_temperature + SETTLING_BUFFER_UP_C:
-            if self.heater_state != OFF:
-                self.heater_state = OFF
-                thermo_utility.set_switch(self.heater_state)
+            if self._heater_state != OFF:
+                self._heater_state = OFF
+                self._board.set_switch(self._heater_state)
         # print "heater: " + str(self.heater_state) + " temp:" + str(current_temperature) + " target:" + str(g_target_temperature)
 
     def run(self):
@@ -148,8 +153,9 @@ class control_thread(threading.Thread):
 
 def main():
     try:
-        commsThread = comms_thread(1, "comms_thread")
-        controlThread = control_thread(2, "control_thread")
+        board = Board.getInstance()
+        commsThread = comms_thread(1, "comms_thread", board)
+        controlThread = control_thread(2, "control_thread", board)
 
         commsThread.start()
         controlThread.start()

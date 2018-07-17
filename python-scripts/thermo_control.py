@@ -1,6 +1,6 @@
 import sys
 import argparse
-import os.path
+import os
 import datetime
 import gevent
 import thermo_utility
@@ -18,9 +18,10 @@ def send_del_timer(message):
     thermo_utility.send("--deltimer:" + message)
 
 def get_plot_from_log(number_of_records):
-    if not os.path.exists(thermo_utility.TEMPERATURE_LOG_FILE_PATH):
+    log_file = os.path.join(thermo_utility.get_project_root_path(),thermo_utility.TEMPERATURE_LOG_FILE_PATH)
+    if not os.path.exists(log_file):
         return None
-    f = open(thermo_utility.TEMPERATURE_LOG_FILE_PATH, 'r')
+    f = open(log_file, 'r')
     lines = f.readlines()
     start_line = 0
     if len(lines) > number_of_records:
@@ -93,12 +94,12 @@ def main():
         deltimer = args.deltimer
 
         if get_temp:
-            print '@@RESPONSE@@', {"temperature" : thermo_utility.get_temperatures(), "target":thermo_utility.send_get_target()}, '@@RESPONSE@@'
+            print '@@RESPONSE@@', {"temperature" : thermo_utility.send_get_current(), "target":thermo_utility.send_get_target()}, '@@RESPONSE@@'
         if plotting:
             print '@@RESPONSE@@', get_plot(int(plotting)), '@@RESPONSE@@'
         if target_temp:
             send_target(target_temp)
-            print '@@RESPONSE@@', {"temperature": thermo_utility.get_temperatures(),
+            print '@@RESPONSE@@', {"temperature": thermo_utility.send_get_current(),
                                    "target": thermo_utility.send_get_target()}, '@@RESPONSE@@'
         if addtimer:
             # skip parameter validation

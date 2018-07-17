@@ -6,21 +6,17 @@ import datetime
 import gevent
 from db_manager import DBManager
 
-# Temperature senor:TI TMP36
-TMP_SENSOR_INPUT_PIN = 'P9_40'
-TMP_SENSOR_ADC_INPUT_PATH = '/sys/bus/iio/devices/iio:device0/in_voltage1_raw'
-MAX_ADC_RAW_VALUE_OUTPUT = 4096
+# path is relative to project root path
+TEMPERATURE_LOG_FILE_PATH = "python-scripts/temperature.log"
+DB_CONFIGURATION_PATH = "db_config.json"
+ERROR_LOG_PATH = "python-scripts/error.log"
 
-GPIO_FILE_PATH  = "/sys/class/gpio/gpio60/value"
-
-TEMPERATURE_LOG_FILE_PATH = "/home/debian/home-control/python-scripts/temperature.log"
 LOCAL_PORT = "9001"
 LOCAL_ADDRESS = "tcp://127.0.0.1" + ":" + LOCAL_PORT
 
-DB_CONFIGURATION_PATH = "/home/debian/home-control/db_config.json"
 
-TEMPERATURE_RECORDS_FROM_LOG = False
-TEMPERATURE_RECORDS_FROM_DB = True
+TEMPERATURE_RECORDS_FROM_LOG = True
+TEMPERATURE_RECORDS_FROM_DB = False
 
 TIMTOUT = 10 #seconds
 
@@ -36,62 +32,25 @@ def send(message, recv = False, timeout=TIMTOUT):
         return response
 
 def send_get_target():
-    return send("--get", recv=True)
+    return send("--getTarget", recv=True)
 
-def get_temperatures():
-    if not os.path.exists(TMP_SENSOR_ADC_INPUT_PATH):
-        return 0
+def send_get_current():
+    return send("--getCurrent", recv=True)
 
-    f = open(TMP_SENSOR_ADC_INPUT_PATH, 'r')
-    reading = int(f.read())
-    millivolts = (float(reading)/float(MAX_ADC_RAW_VALUE_OUTPUT)) * 1800  # 1.8V reference = 1800 mV
-    temp_c = (millivolts - 500) / 10
-    return "%.1f" % temp_c
-
-def get_filtered_temperature():
-    num_of_samples = 10
-    samples = []
-    for i in range(num_of_samples):
-        t = float(get_temperatures())
-        samples.append(t)
-        time.sleep(0.2)
-    samples.sort()
-    # remove min/max and average
-    # print samples
-    samples.pop(0)
-    samples.pop()
-    temp_c = sum(samples) / float(len(samples))
-    return "%.1f" % temp_c
-
-def get_switch_state():
-    if not os.path.exists(GPIO_FILE_PATH):
-        return False
-    f = open(GPIO_FILE_PATH, 'r')
-    value = f.read()
-    f.close()
-    if len(value) != 1:
-        return False
-    if value == "1":
-        return True
-    else:
-        return False
-
-def set_switch(value):
-    if int(value) not in [0, 1]:
-        return
-    if not os.path.exists(GPIO_FILE_PATH):
-        return
-    f = open(GPIO_FILE_PATH, 'w')
-    f.write(value)
-    f.close()
+def get_project_root_path():
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 def connect_db():
-    f = open(DB_CONFIGURATION_PATH, 'r')
+    f = open(os.path.join(get_project_root_path(), DB_CONFIGURATION_PATH), 'r')
     json_obj = json.load(f)
     return DBManager(json_obj)
 
-# input: datetime.time
 def get_next_datetime(timer):
+    """Get the repeated timer next day.
+    Arguments:
+    timer -- datetime.time type
+    Return datetime.time
+    """
     now = datetime.datetime.now()
     # always looking for future time, for example, now is 22:00, next is 07:00
     # now > next
@@ -103,6 +62,6 @@ def get_next_datetime(timer):
     return timer
 
 def write_to_error_log(line):
-    f = open("/home/debian/home-control/python-scripts/error.log", "a")
+    f = open(os.path.join(get_project_root_path() ,ERROR_LOG_PATH), "a")
     f.write(line)
     f.close()

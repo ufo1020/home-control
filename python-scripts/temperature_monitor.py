@@ -3,19 +3,20 @@ import os.path
 import datetime
 import time
 import thermo_utility
-
+from Board import Board
 
 DURATION = 60 # Seconds
 
 # store number of readings before writing to file
 buffer = []
+board = Board.getInstance()
 
 def save_to_file():
     global buffer
     if len(buffer) < 10:
-        buffer.append(str(datetime.datetime.now()) + ","+str(thermo_utility.get_filtered_temperature())+","+str(thermo_utility.send_get_target())+"\n")
+        buffer.append(str(datetime.datetime.now()) + ","+str(board.get_filtered_temperature())+","+str(thermo_utility.send_get_target())+"\n")
     else:
-        f = open(thermo_utility.TEMPERATURE_LOG_FILE_PATH, "a")
+        f = open(os.path.join(thermo_utility.get_project_root_path(), thermo_utility.TEMPERATURE_LOG_FILE_PATH), "a")
         for item in buffer:
             f.write(item)
         buffer = []
@@ -23,7 +24,7 @@ def save_to_file():
 
 def save_to_db(db_manager):
     try:
-        db_manager.insert_one({'timestamp':str(datetime.datetime.now()), 'temperature':thermo_utility.get_filtered_temperature(),'target':thermo_utility.send_get_target()})
+        db_manager.insert_one({'timestamp':str(datetime.datetime.now()), 'temperature':board.get_filtered_temperature(),'target':thermo_utility.send_get_target()})
     except Exception as exception:
         thermo_utility.write_to_error_log("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
 
