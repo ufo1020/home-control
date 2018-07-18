@@ -1,5 +1,5 @@
 var support_panel = angular.module('HomeControl', ['nvd3']);
-var host_address = "10.0.0.107:5000";
+var host_address = "10.0.0.107";
 var socket = io.connect('http://'+host_address);
 
 support_panel.controller('mainController', function($interval, $scope, $http) {
