@@ -8,7 +8,7 @@ import threading
 g_target_temperature = 0
 g_target_temperature_list = []
 
-SETTLING_BUFFER_UP_C = 1.0
+SETTLING_BUFFER_UP_C = 0.2
 SETTLING_BUFFER_DOWN_C = 0.5
 
 MONITOR_TIMEOUT_S = 60

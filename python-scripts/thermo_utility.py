@@ -57,7 +57,6 @@ def get_filtered_temperature():
         time.sleep(0.2)
     samples.sort()
     # remove min/max and average
-    # print samples
     samples.pop(0)
     samples.pop()
     temp_c = sum(samples) / float(len(samples))
