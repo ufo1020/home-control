@@ -9,7 +9,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/libs', express.static(__dirname + '/node_modules'));
 app.use('/components', express.static(__dirname + '/bower_components'));
 
-server.listen(port=80, host='10.0.0.107');
+server.listen(port=5000, host='10.0.0.2');
 // console.log('Server running on: localhost:5000');
 
 app.get('/', function (req, res) {

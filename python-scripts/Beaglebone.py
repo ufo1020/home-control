@@ -2,6 +2,7 @@
 
 from TMP36 import TMP36
 import platform
+import os
 
 class Beaglebone(object):
     """Beaglebone specific settings which includes ADC pins, GPIOs etc.
@@ -18,7 +19,6 @@ class Beaglebone(object):
 
     def __init__(self):
         # make sure it's the right board
-        assert ("beaglebone" in platform.uname())
         self._tmp_sensor = TMP36(max_voltage = Beaglebone.ADC_MAX_VOLTAGE, max_adc_value = Beaglebone.MAX_ADC_RAW_VALUE_OUTPUT)
 
     def get_temperature(self):

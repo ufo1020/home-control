@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=debian
 Group=debian
-ExecStart=/home/debian/home-control/tools/init_beaglebone.sh
+ExecStart=/home/debian/home-control/tools/init_thermo_service.sh
 Restart=on-abort
 
 [Install]

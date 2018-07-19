@@ -29,7 +29,6 @@ class Board(threading.Thread):
 
         threading.Thread.__init__(self)
         # Only support RaspberryPi and BeagleBone
-        assert ("raspberrypi" in platform.uname() or "beaglebone" in platform.uname())
         if "raspberrypi" in platform.uname():
             self._platform = RaspberryPi()
         else:
@@ -61,10 +60,11 @@ class Board(threading.Thread):
         samples.pop()
         temp_c = sum(samples) / float(len(samples))
         self._cached_temperature = "%.1f" % temp_c
-        # print self._cached_temperature
+        print self._cached_temperature
         return "%.1f" % temp_c
 
     def get_catched_temperature(self):
+        print "get_catched_temperature"
         return self._cached_temperature
 
     def get_switch_state(self):
