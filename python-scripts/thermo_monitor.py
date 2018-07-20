@@ -34,7 +34,6 @@ class comms_thread(threading.Thread):
     def listening(self):
         while True:
             message = self._sock.recv()
-            print message
             result = self.handle_message(message)
             if result == None:
                 result = ""
@@ -99,7 +98,6 @@ class comms_thread(threading.Thread):
         elif command == "--getTarget":
             return g_target_temperature
         elif command == "--getCurrent":
-            print "get  current"
             return self._board.get_catched_temperature()
         elif command == "--gettimers":
             timers = []

@@ -28,6 +28,11 @@ class Beaglebone(object):
         temp_c = self._tmp_sensor.get_temperature(int(f.read()))
         return temp_c
 
+
+    def get_output_pin(self):
+        return Beaglebone.GPIO_FILE_PATH
+
+
 def main():
     bb  = Beaglebone()
     print bb.get_temperature()
