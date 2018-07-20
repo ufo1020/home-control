@@ -3,7 +3,7 @@
 PROJECT_ROOT="$(dirname $PWD)"
 IS_RASPBERRY_PI=$(uname -a | grep -q 'raspberry')
 # raspberry pi setup
-if [ $IS_RASPBERRY_PI ]; then
+if [ ! -z $IS_RASPBERRY_PI ]; then
   #this is called from /etc/rc.d/rc.local
   echo "22" > /sys/class/gpio/export
   echo "out" > /sys/class/gpio/gpio22/direction
@@ -40,11 +40,12 @@ done
 # get primary ip address
 IP_ADDRESS=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 # get port
-if $IS_RASPBERRY_PI; then
+if [ ! -z $IS_RASPBERRY_PI ]; then
   PORT=80
   IP=$IP_ADDRESS PORT=$PORT node $PROJECT_ROOT/app.js >/dev/null&
 else
   PORT=5000
+  echo "beag start node, should never return"
   IP=$IP_ADDRESS PORT=$PORT node $PROJECT_ROOT/app.js >/dev/null
 fi
-)&
+)

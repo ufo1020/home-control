@@ -1,3 +1,4 @@
+# service file locate in: /etc/systemd/system. Symlink to this file has been created to keep changes applied
 [Unit]
 Description=Temperture control service
 After=network.target
