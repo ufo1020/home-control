@@ -1,10 +1,13 @@
 #!/bin/bash
 
-PROJECT_ROOT="/home/debian/home-control"
-#PROJECT_ROOT="$(dirname $PWD)"
-IS_RASPBERRY_PI=$(uname -a | grep -q 'raspberry')
+FILE_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+PROJECT_ROOT="$( dirname $FILE_PATH)"
+#echo $PROJECT_ROOT
+IS_RASPBERRY_PI=$(uname -a | grep -c 'raspberry')
+#echo $IS_RASPBERRY_PI
+
 # raspberry pi setup
-if [ ! -z $IS_RASPBERRY_PI ]; then
+if [ $IS_RASPBERRY_PI -eq 1 ]; then
     #this is called from /etc/rc.d/rc.local
     echo "22" > /sys/class/gpio/export
     echo "out" > /sys/class/gpio/gpio22/direction
@@ -21,6 +24,8 @@ if [ ! -z $IS_RASPBERRY_PI ]; then
     IP_ADDRESS=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
     # get port
     PORT=80
+    
+    python $PROJECT_ROOT/tools/setupClientHost.py $IP_ADDRESS $PORT
     IP=$IP_ADDRESS PORT=$PORT node $PROJECT_ROOT/app.js >/dev/null&
     )&
 else
@@ -52,6 +57,8 @@ else
     IP_ADDRESS=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
     # get port
     PORT=5000
+    
+    python $PROJECT_ROOT/tools/setupClientHost.py $IP_ADDRESS $PORT
     IP=$IP_ADDRESS PORT=$PORT node $PROJECT_ROOT/app.js >/dev/null
     )
 fi
