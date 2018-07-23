@@ -36,17 +36,22 @@
             </div>
          </div>
          <div name="power-page" class="image-background">
-            <div class="blur-background-time"></div>
-            <div class="center-container-time">
-            <div class="border border-light">
+            <div class="blur-background-time" id="power-blur-bg"></div>
+            <div class="center-container-time" id="power-center">
+            <div class="border border-light margin-top">
                 <div class="text-center bg-success text-white">Target: {{ctrl.target_temp}}°C</div>
-                <div id="list-timers" class="list-group list-group-flush" id="list-tab" role="tablist">
+                <paper-slider id="target" min="8" max="25" value="10" pin editable class="time-slider red"></paper-slider>
+                <div style="overflow:hidden">
+                  <paper-fab mini class="blue align-right" style="float: right" icon="icons:done" title="home" ng-click="ctrl.set_temperatures()"></paper-fab>
                 </div>
+
             </div>
-                <paper-slider id="target" min="8" max="30" value="10" pin editable class="time-slider red border border-light bottom-up"></paper-slider>
-                <div class="bottom-right">
-                  <paper-fab mini class="blue" icon="icons:alarm-add" title="home" ng-click="ctrl.on_add_timer_click()"></paper-fab>
-                </div>
+            <div class="border border-light margin-top">
+              <div id="list-timers" class="list-group list-group-flush" id="list-tab" role="tablist"></div>
+              <div style="overflow:hidden">
+                <paper-fab mini class="blue align-right" style="float: right" icon="icons:alarm-add" title="home" ng-click="ctrl.on_add_timer_click()"></paper-fab>
+              </div>
+            </div>
             </div>
          </div>
          <div name="plot-page" class="image-background">

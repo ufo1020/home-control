@@ -1,5 +1,5 @@
 var support_panel = angular.module('HomeControl', ['nvd3']);
-var host_address = "10.0.0.2:5000";
+var host_address = "10.0.0.107:80";
 var socket = io.connect('http://'+host_address);
 
 support_panel.controller('mainController', function($interval, $scope, $http) {
@@ -183,6 +183,18 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 for (var i = 0; i < response.length; i++) {
                    vm.timers.push({temp:response[i].temp, time:response[i].time, repeat:response[i].repeat});
                }
+               // adjust layout to put timer itmes
+               // background default 300px height, center default 250px height.
+               // Each item 50px height. Total height is:
+               // 300 + (number of timers - 1) * 50
+               var background = document.querySelector('#power-blur-bg');
+               var center = document.querySelector('#power-center')
+               if (vm.timers.length > 1) {
+                 var height = 300 + (vm.timers.length - 1) * 50;
+                 background.style.height =  height + 'px';
+                 height = 250 + (vm.timers.length - 1) * 50;
+                 center.style.height = height + 'px';
+               }
                vm.update_timer_list();
             }
             // from on_delete_timer_click()
@@ -266,9 +278,9 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
         };
     };
 
-    vm.set_temperatures = function(value) {
+    vm.set_temperatures = function() {
         // Set target temperature
-        var args = "--target:" + value;
+        var args = "--target:" + document.querySelector('#target').value;
         vm.show_loading_dialog()
         socket.emit('control-commands', 'runscript~temp-log~thermo_control~'+args, function(run_result) {
             // update display
@@ -361,11 +373,11 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
     vm.initialise = function() {
         // add slider event listener
 
-        var target = document.querySelector('#target');
-
-        target.addEventListener('value-change', function() {
-          vm.set_temperatures(target.value);
-        });
+        // var target = document.querySelector('#target');
+        //
+        // target.addEventListener('value-change', function() {
+        //   vm.set_temperatures(target.value);
+        // });
 
         document.addEventListener('click',function(e){
             if(e.target && e.target.dataHost) {
