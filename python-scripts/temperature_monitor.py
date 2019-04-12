@@ -26,7 +26,7 @@ def save_to_db(db_manager):
     try:
         db_manager.insert_one({'timestamp':str(datetime.datetime.now()), 'temperature':board.get_filtered_temperature(),'target':thermo_utility.send_get_target()})
     except Exception as exception:
-        thermo_utility.write_to_error_log("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
+        thermo_utility.write_to_error_log("Exception: {}-{}-{}\n".format(datetime.datetime.now(), 'save_to_db', exception))
 
 def main():
     db_manager = None

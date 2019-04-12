@@ -109,7 +109,7 @@ def main():
         if get_timers:
             print '@@RESPONSE@@', send_get_timers(), '@@RESPONSE@@'
     except Exception as exception:
-        thermo_utility.write_to_error_log("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
+        thermo_utility.write_to_error_log("Exception: {}-{}-{}\n".format(datetime.datetime.now(), 'thermo control', exception))
 
 if __name__ == "__main__":
     sys.exit(main())

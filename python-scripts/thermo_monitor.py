@@ -162,7 +162,7 @@ def main():
         while True:
             time.sleep(1)
     except Exception as exception:
-        thermo_utility.write_to_error_log("Exception: {}-{}\n".format(datetime.datetime.now(), exception))
+        thermo_utility.write_to_error_log("Exception: {}-{}-{}\n".format(datetime.datetime.now(), 'thermo monitor', exception))
 
 if __name__ == "__main__":
     sys.exit(main())
