@@ -34,7 +34,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 axisLabel: 'Time',
                 tickFormat: function(d) {
                   //nvd3 date format: https://bl.ocks.org/zanarmstrong/ca0adb7e426c12c06a95
-                  return d3.time.format('%H:%M')(new Date(d))
+                  return new Date(d).toUTCString().split(' ')[4].substring(0,5)
                }
             },
             yAxis: {
@@ -263,7 +263,7 @@ support_panel.controller('mainController', function($interval, $scope, $http) {
                 // https://stackoverflow.com/questions/13363673/javascript-date-is-invalid-on-ios
                 // Date format need to be ISO-8601, the only change here is to replace space with T:
                 // "2015-12-31T00:00:00"
-                var time = new Date(response[i].timestamp.replace(' ', 'T').concat(+1000));
+                var time = new Date(response[i].timestamp.replace(' ', 'T').concat('Z'));
                 if (typeof response[i].temperature === "string") {
                     response[i].temperature = parseFloat(response[i].temperature);
                 }
