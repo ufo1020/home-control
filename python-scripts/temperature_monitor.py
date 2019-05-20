@@ -10,6 +10,7 @@ DURATION = 60 # Seconds
 # store number of readings before writing to file
 buffer = []
 board = Board.getInstance()
+tick = None
 
 def save_to_file():
     global buffer
@@ -28,6 +29,17 @@ def save_to_db(db_manager):
     except Exception as exception:
         thermo_utility.write_to_error_log("Exception: {}-{}-{}\n".format(datetime.datetime.now(), 'save_to_db', exception))
 
+def check_command(db_manager):
+    try:
+        command = db_manager.get_last_command()
+        if command and \
+                abs(datetime.datetime.strptime(command['timestamp'], "%Y-%m-%d %H:%M:%S.%f") - tick).total_seconds()<DURATION:
+            if command['command'] == 'set':
+                thermo_utility.send("--target:" + str(int(command['value'])))
+    except Exception as exception:
+        thermo_utility.write_to_error_log("Exception: {}-{}-{}\n".format(datetime.datetime.now(), 'save_to_db', exception))
+
+
 def main():
     db_manager = None
     if thermo_utility.TEMPERATURE_RECORDS_FROM_DB:
@@ -36,7 +48,10 @@ def main():
         if thermo_utility.TEMPERATURE_RECORDS_FROM_LOG:
             save_to_file()
         if thermo_utility.TEMPERATURE_RECORDS_FROM_DB and db_manager:
+            global tick
+            tick = datetime.datetime.utcnow()
             save_to_db(db_manager)
+            check_command(db_manager)
         time.sleep(DURATION)
     return 2
 
