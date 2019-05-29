@@ -3,6 +3,7 @@ import pymongo
 class DBManager():
     COLLECTION_NAME = 'livingroom-temperature'
     CAPPED_COLLECTION_NAME = 'livingroom-temperature-capped'
+    CAPPED_DAILY_COLLECTION_NAME = 'livingroom-temperature-daily-capped'
     COMMANDS_COLLECTION_NAME = 'commands-capped'
 
     def __init__(self, configuration_json):
@@ -11,6 +12,7 @@ class DBManager():
         self.database = None
         self.collection = None
         self.capped_collection = None # for performance reason, cache last 10 records.
+        self.capped_daily_collection = None  # for performance reason
         self.commands_collection = None
 
         self.connect()
@@ -20,11 +22,13 @@ class DBManager():
         self.database = self.client.home
         self.collection = self.database[DBManager.COLLECTION_NAME]
         self.capped_collection = self.database[DBManager.CAPPED_COLLECTION_NAME]
+        self.capped_daily_collection = self.database[DBManager.CAPPED_DAILY_COLLECTION_NAME]
         self.commands_collection = self.database[DBManager.COMMANDS_COLLECTION_NAME]
 
     def insert_one(self, item):
         self.collection.insert_one(item)
         self.capped_collection.insert_one(item)
+        self.capped_daily_collection.insert_one(item)
 
     def insert_command(self, item):
         self.commands_collection.insert_one(item)
@@ -32,6 +36,10 @@ class DBManager():
     def get_last_command(self):
         cursor = self.commands_collection.find().skip(self.commands_collection.count() - 1)
         return [x for x in cursor][0]
+
+    def get_daily_records(self):
+        cursor = self.capped_daily_collection.find()
+        return [x for x in cursor]
 
     def get_last_number_of_records(self, N):
         return self.collection.find().skip(self.collection.count() - N)

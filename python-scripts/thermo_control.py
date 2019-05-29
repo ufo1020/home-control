@@ -50,20 +50,16 @@ def get_plot_from_log(number_of_records):
     f.close()
     return items
 
-def get_plot_from_db(number_of_records):
-    items = []
+def get_plot_from_db():
     with gevent.Timeout(thermo_utility.TIMTOUT):
         db = thermo_utility.connect_db()
-        records = db.get_last_number_of_records(number_of_records)
-        for record in records:
-            items.append(record)
-    return items
+        return db.get_daily_records()
 
 def get_plot(number_of_records):
     # get records from DB if possible
     records = None
     if thermo_utility.TEMPERATURE_RECORDS_FROM_DB:
-        records = get_plot_from_db(number_of_records)
+        records = get_plot_from_db()
     elif thermo_utility.TEMPERATURE_RECORDS_FROM_LOG:
         records = get_plot_from_log(number_of_records)
     return records
