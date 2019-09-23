@@ -5,6 +5,7 @@ class DBManager():
     CAPPED_COLLECTION_NAME = 'livingroom-temperature-capped'
     CAPPED_DAILY_COLLECTION_NAME = 'livingroom-temperature-daily-capped'
     COMMANDS_COLLECTION_NAME = 'commands-capped'
+    SETTINGS_COLLECTION_NAME = 'settings-capped'
 
     def __init__(self, configuration_json):
         self.config = configuration_json
@@ -14,6 +15,7 @@ class DBManager():
         self.capped_collection = None # for performance reason, cache last 10 records.
         self.capped_daily_collection = None  # for performance reason
         self.commands_collection = None
+        self.settings_collection = None
 
         self.connect()
 
@@ -24,6 +26,7 @@ class DBManager():
         self.capped_collection = self.database[DBManager.CAPPED_COLLECTION_NAME]
         self.capped_daily_collection = self.database[DBManager.CAPPED_DAILY_COLLECTION_NAME]
         self.commands_collection = self.database[DBManager.COMMANDS_COLLECTION_NAME]
+        self.settings_collection = self.database[DBManager.SETTINGS_COLLECTION_NAME]
 
     def insert_one(self, item):
         self.collection.insert_one(item)
@@ -36,6 +39,13 @@ class DBManager():
     def get_last_command(self):
         cursor = self.commands_collection.find().skip(self.commands_collection.count() - 1)
         return [x for x in cursor][0]
+
+    def get_all_commands(self):
+        cursor = self.commands_collection.find()
+        return [x for x in cursor]
+
+    def delete_all_commands(self):
+        self.commands_collection.delete_many({})
 
     def get_daily_records(self):
         cursor = self.capped_daily_collection.find()
@@ -53,4 +63,4 @@ class DBManager():
 
     def print_all(self):
         for item in self.collection.find({}):
-            print item
+            print(item)

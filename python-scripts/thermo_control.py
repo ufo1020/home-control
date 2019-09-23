@@ -9,13 +9,19 @@ def parse_date(date_string):
     return datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S.%f")
 
 def send_target(message):
-    thermo_utility.send("--target:" + message)
+    with thermo_utility.connect_db() as db:
+        db.insert_command({"timestamp": datetime.datetime.utcnow(), "command":"set", "value":message})
+    # thermo_utility.send("--target:" + message)
 
 def send_add_timer(message):
-    thermo_utility.send("--addtimer:" + message)
+    with thermo_utility.connect_db() as db:
+        db.insert_command({"timestamp": datetime.datetime.utcnow(), "command":"addtimer", "value":message})
+    # thermo_utility.send("--addtimer:" + message)
 
 def send_del_timer(message):
-    thermo_utility.send("--deltimer:" + message)
+    with thermo_utility.connect_db() as db:
+        db.insert_command({"timestamp": datetime.datetime.utcnow(), "command": "deltimer", "value": message})
+    # thermo_utility.send("--deltimer:" + message)
 
 def get_plot_from_log(number_of_records):
     log_file = os.path.join(thermo_utility.get_project_root_path(),thermo_utility.TEMPERATURE_LOG_FILE_PATH)
@@ -90,20 +96,20 @@ def main():
         deltimer = args.deltimer
 
         if get_temp:
-            print '@@RESPONSE@@', {"temperature" : thermo_utility.send_get_current(), "target":thermo_utility.send_get_target()}, '@@RESPONSE@@'
+            print('@@RESPONSE@@', {"temperature" : thermo_utility.send_get_current(), "target":thermo_utility.send_get_target()}, '@@RESPONSE@@')
         if plotting:
-            print '@@RESPONSE@@', get_plot(int(plotting)), '@@RESPONSE@@'
+            print('@@RESPONSE@@', get_plot(int(plotting)), '@@RESPONSE@@')
         if target_temp:
             send_target(target_temp)
-            print '@@RESPONSE@@', {"temperature": thermo_utility.send_get_current(),
-                                   "target": thermo_utility.send_get_target()}, '@@RESPONSE@@'
+            print('@@RESPONSE@@', {"temperature": thermo_utility.send_get_current(),
+                                   "target": thermo_utility.send_get_target()}, '@@RESPONSE@@')
         if addtimer:
             # skip parameter validation
             send_add_timer(addtimer)
         if deltimer:
             send_del_timer(deltimer)
         if get_timers:
-            print '@@RESPONSE@@', send_get_timers(), '@@RESPONSE@@'
+            print('@@RESPONSE@@', send_get_timers(), '@@RESPONSE@@')
     except Exception as exception:
         thermo_utility.write_to_error_log("Exception: {}-{}-{}\n".format(datetime.datetime.now(), 'thermo control', exception))
 

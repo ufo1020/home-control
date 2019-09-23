@@ -31,11 +31,19 @@ def save_to_db(db_manager):
 
 def check_command(db_manager):
     try:
-        command = db_manager.get_last_command()
-        if command and \
-                abs(datetime.datetime.strptime(command['timestamp'], "%Y-%m-%d %H:%M:%S.%f") - tick).total_seconds()<DURATION:
+        commands = db_manager.get_all_commands()
+        for command in commands:
             if command['command'] == 'set':
                 thermo_utility.send("--target:" + str(int(command['value'])))
+            elif command['command'] == 'addtimer':
+                thermo_utility.send("--addtimer:" + str(int(command['value'])))
+            elif command['command'] == 'deltimer':
+                thermo_utility.send("--deltimer:" + str(int(command['value'])))
+        db_manager.delete_all_commands()
+        # if commands and \
+        #         abs(datetime.datetime.strptime(command['timestamp'], "%Y-%m-%d %H:%M:%S.%f") - tick).total_seconds()<DURATION:
+        #     if command['command'] == 'set':
+        #         thermo_utility.send("--target:" + str(int(command['value'])))
     except Exception as exception:
         thermo_utility.write_to_error_log("Exception: {}-{}-{}\n".format(datetime.datetime.now(), 'save_to_db', exception))
 
