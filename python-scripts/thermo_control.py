@@ -53,7 +53,10 @@ def get_plot_from_log(number_of_records):
 def get_plot_from_db():
     with gevent.Timeout(thermo_utility.TIMTOUT):
         db = thermo_utility.connect_db()
-        return db.get_daily_records()
+        # sampling only 1/10th daily day gives 144 data points to load faster.
+        # Smoothing data with Savitzky-Golay filter.
+        return thermo_utility.update_data_with_savgol_filter(db.get_daily_records(steps=10), window_size=9, order=3)
+        # return db.get_daily_records(steps=10)
 
 def get_plot(number_of_records):
     # get records from DB if possible

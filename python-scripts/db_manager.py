@@ -1,4 +1,5 @@
 import pymongo
+import datetime
 
 class DBManager():
     COLLECTION_NAME = 'livingroom-temperature'
@@ -37,9 +38,15 @@ class DBManager():
         cursor = self.commands_collection.find().skip(self.commands_collection.count() - 1)
         return [x for x in cursor][0]
 
-    def get_daily_records(self):
+    # def get_daily_records(self):
+    #     cursor = self.capped_daily_collection.find()
+    #     return [x for x in cursor]
+
+    def get_daily_records(self, steps=1):
+        from_timestamp = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')
         cursor = self.capped_daily_collection.find()
-        return [x for x in cursor]
+        records = [x for x in cursor]
+        return [x for x in records if x['timestamp'] > from_timestamp][::steps]
 
     def get_last_number_of_records(self, N):
         return self.collection.find().skip(self.collection.count() - N)

@@ -102,3 +102,9 @@ Bashrc:
 			if [ -f ~/.bashrc ]; then
 	   			. ~/.bashrc;
 			fi
+
+Updates
+===============================================
+Enable Mongodb SSL - Fix [SSL: CERTIFICATE_VERIFY_FAILED] error:
+    - update out-date root certificate by: sudo apt install ca-certificates
+    - verify ca updates in folder: /etc/ssl/certs
