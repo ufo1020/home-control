@@ -21,10 +21,17 @@ A generic relay is used to toggle home thermo switch, and it's controlled throug
 Rasberry Setup
 ==============
 MCP3002 connects to Board as:
-    VDD: 3.3v, CLK: GPIO11 , Dout: GPIO09, Din: GPIO10,  CS: GPIO08, CH1: Ground Vss : Ground.
+- VDD: 3.3v, 
+- CLK: GPIO11,
+- Dout: GPIO09, 
+- Din: GPIO10,
+- CS: GPIO08,
+- CH1: Ground 
+- Vss : Ground.
 MCP3002 connects to TMP36 as:
-    CHO: TMP36 output
-GPIO25(Pin 22) is used as digital output to toggle relay
+- CHO: TMP36 output
+
+GPIO22(Pin 15) is used as digital output to toggle relay
 
 Enable hardware SPI through:
 ```shell
