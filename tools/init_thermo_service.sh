@@ -9,7 +9,7 @@ IS_RASPBERRY_PI=$(uname -a | grep -c 'raspberry')
 # raspberry pi setup
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
     #this is called from /etc/rc.d/rc.local
-    echo "22" > /sys/class/gpio/export
+    echo "15" > /sys/class/gpio/export
     echo "out" > /sys/class/gpio/gpio22/direction
     python $PROJECT_ROOT/python-scripts/thermo_monitor.py&
     python $PROJECT_ROOT/python-scripts/temperature_monitor.py&
@@ -23,7 +23,7 @@ if [ $IS_RASPBERRY_PI -eq 1 ]; then
     # get primary ip address
     IP_ADDRESS=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
     # get port
-    PORT=80
+    PORT=5000
     
     python $PROJECT_ROOT/tools/setupClientHost.py $IP_ADDRESS $PORT
     IP=$IP_ADDRESS PORT=$PORT node $PROJECT_ROOT/app.js >/dev/null&
