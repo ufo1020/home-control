@@ -14,7 +14,7 @@ class RaspberryPi(object):
     SPI_DEVICE = 0 # connect to SPI0
     SPI_VDD_VOLTAGE = 3300 #mV, connect to Pin_01
     MCP3002_CHANNEL = 0 # Temperature sensor connect to channel 0
-    GPIO_FILE_PATH  = "/sys/class/gpio/gpio15/value"
+    GPIO_FILE_PATH  = "/sys/class/gpio/gpio22/value"
 
     def __init__(self):
         # make sure it's the right board
