@@ -10,7 +10,7 @@ IS_RASPBERRY_PI=$(uname -a | grep -c 'raspberry')
 if [ $IS_RASPBERRY_PI -eq 1 ]; then
     #this is called from /etc/rc.d/rc.local
     echo "15" > /sys/class/gpio/export
-    echo "out" > /sys/class/gpio/gpio22/direction
+    echo "out" > /sys/class/gpio/gpio15/direction
     python $PROJECT_ROOT/python-scripts/thermo_monitor.py&
     python $PROJECT_ROOT/python-scripts/temperature_monitor.py&
     # node $PROJECT_ROOT/app.js >/dev/null&
